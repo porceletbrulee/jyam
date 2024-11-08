@@ -54,7 +54,6 @@ func _setup_platforms(p1_loc: Vector2, p2_loc: Vector2):
 	var cols = plats[0].size()
 	for i in range(0, rows * cols):
 		var child_name = "platform" + str(i);
-		var n = get_node("")
 		var plat = get_node("platforms/" + child_name)
 		var row = i % 3
 		@warning_ignore("integer_division") var col = i / 3

@@ -7,7 +7,7 @@ var sec_per_measure: float = 0.0
 
 var events: Array = []
 
-func _init(path: String) -> void:
+func _init(_path: String) -> void:
 	# FIXME: load from file
 	self.sec_per_beat = 60.0 / 137.0
 	self.beats_per_measure = 3
