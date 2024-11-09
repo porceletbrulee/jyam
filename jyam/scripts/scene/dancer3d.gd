@@ -1,4 +1,4 @@
-extends Node3D
+class_name Dancer3D extends Node3D
 
 @export var player: GameLogic.Player = GameLogic.Player.PLAYER_1
 
@@ -48,7 +48,7 @@ func scene_ready(
 	self.partner_ref = partner
 	
 	var plat = platform_layout.get_platform(initial_pos)
-	self.transform.origin = self._platform_pos(plat.transform)
+	self.transform.origin = self._platform_pos(plat.node3d.transform)
 	
 	if self.player == GameLogic.Player.PLAYER_1:
 		self._action_movements = [
@@ -117,7 +117,7 @@ func _move(dir):
 		self._anim.set_speed_scale(anim_scale)
 	self._move_target_loc = new_loc
 	self._move_origin_point = self.transform.origin
-	self._move_target_point = self._platform_pos(plat.transform)
+	self._move_target_point = self._platform_pos(plat.node3d.transform)
 	self._move_t = 0.0
 	self._is_moving = true
 	

@@ -11,10 +11,10 @@ var _cols: Array
 class GamePlatform extends RefCounted:
 	var loc: Vector2
 	var player: GameLogic.Player = GameLogic.Player.PLAYER_NONE
-	var platform: Node3D = null
-	func  _init(ploc: Vector2, pplayer: GameLogic.Player, pplatform: Node3D):
+	var node3d: Node3D = null
+	func  _init(ploc: Vector2, pplayer: GameLogic.Player, pnode3d: Node3D):
 		self.player = pplayer
-		self.platform = pplatform
+		self.node3d = pnode3d
 		self.loc = ploc
 		
 	func _to_string() -> String:
@@ -40,11 +40,11 @@ func _init(m: Array, p1_loc: Vector2, p2_loc: Vector2):
 			platform_col.push_back(gp)
 		self._cols.push_back(platform_col)
 	
-func get_platform(pos: Vector2) -> Node3D:
+func get_platform(pos: Vector2) -> GamePlatform:
 	if pos.x >= 0 and pos.x < self._cols.size():
 		var col = self._cols[pos.x]
 		if pos.y >= 0 and pos.y < col.size():
-			return col[pos.y].platform
+			return col[pos.y]
 	return null
 	
 func _to_string() -> String:
