@@ -9,7 +9,7 @@ var count: int:
 	get:
 		return self._count
 	set(_value):
-		assert(false, "cannot set len directly")
+		assert(false, "cannot set count directly")
 
 # capacity
 var cap: int:
