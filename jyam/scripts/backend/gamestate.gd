@@ -3,8 +3,11 @@ class_name GameState extends RefCounted
 var _song_timer_ref: SongTimer = null
 var _platforms_ref: GamePlatforms = null
 var _player_to_dancer: Dictionary
+var _player_to_anticipation_meter: Dictionary
 
 var _paused: bool = false
+
+var _last_measure: int
 
 func _init(song_timer: SongTimer,
 		   platforms,
@@ -14,8 +17,17 @@ func _init(song_timer: SongTimer,
 	self._player_to_dancer = {}
 	for d in dancers:
 		self._player_to_dancer[d.player] = d
+		self._player_to_anticipation_meter[d.player] = 0
 		self._platforms_ref.set_dancer(d, d.platform_pos)
+
 	self._paused = false
+
+	self._last_measure = 0
+
+func anticipation_meter(player: GameLogic.Player) -> int:
+	var val = self._player_to_anticipation_meter.get(player)
+	assert(val != null)
+	return val
 
 func _perform_action(action: GameInputs.GameAction) -> bool:
 	var player = GameInputs.GAME_ACTION_TO_PLAYER.get(action)
@@ -61,7 +73,24 @@ func input(event: InputEvent) -> void:
 			var action = GameInputs.GameAction[action_str]
 			self._perform_action(action)
 
+func _on_measure():
+	for p in self._player_to_anticipation_meter:
+		var old_meter = self._player_to_anticipation_meter[p]
+		var meter = old_meter + GameLogic.ANTICIPATION_GROWTH_PER_MEASURE
+		meter = mini(meter, GameLogic.ANTICIPATION_METER_MAX)
+		if old_meter != meter:
+			self._player_to_anticipation_meter[p] = meter
+
+
 func physics_process(delta: float) -> void:
 	# update SongTimer first so time is up-to-date
 	self._song_timer_ref.physics_process(delta)
 	
+	var measure = self._song_timer_ref.measure
+	if measure != self._last_measure:
+		if self._last_measure + 1 != measure:
+			print_debug("jumped {0} measures, dropping frames?".format([
+				measure - self._last_measure
+			]))
+		self._on_measure()
+		self._last_measure = measure

@@ -10,6 +10,7 @@ var _process_counter = 0
 var _last_sec = -100.0
 
 var _beats: int = -1
+var _measure: int = -1
 
 var _event_context = null
 var events: MinHeap
@@ -67,6 +68,8 @@ func _init(asp: AudioStreamPlayer,
 	self._event_context = event_context
 
 func play() -> void:
+	self._beats = 0
+	self._measure = 0
 	self._asp_ref.play()
 
 var beats_per_measure: int:
@@ -86,6 +89,12 @@ var beats: int:
 		return self._beats
 	set(_value):
 		assert(false, "don't set beats")
+
+var measure: int:
+	get:
+		return self._measure
+	set(_value):
+		assert(false, "don't set measure")
 
 var curr_sec: float:
 	get:
@@ -125,6 +134,7 @@ func physics_process(_delta: float) -> void:
 		self._last_sec = sec
 		# update beat counter
 		self._beats = int(self._last_sec / self._song_metadata_ref.sec_per_beat)
+		@warning_ignore("integer_division") self._measure = self._beats / self.beats_per_measure
 	
 	var next_event = self.events.peek_root()
 	if next_event != null and next_event.trigger_sec >= self._last_sec:
