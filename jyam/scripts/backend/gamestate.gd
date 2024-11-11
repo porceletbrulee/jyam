@@ -43,8 +43,6 @@ func _perform_action(action: GameInputs.GameAction) -> bool:
 			dancer.moving = false
 			# FIXME: trigger dancer idle animation
 			
-			print_debug(self._platforms_ref)  # FIXME: remove
-			
 		var ev = SongTimer.Event.new(
 			self._song_timer_ref,
 			self._song_timer_ref.sec_per_beat,
