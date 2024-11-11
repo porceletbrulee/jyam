@@ -50,21 +50,18 @@ func scene_ready(
 	var plat = platform_layout.get_platform(initial_pos)
 	self.transform.origin = self._platform_pos(plat.node3d.transform)
 	
+	var action_to_event_str = GameInputs.GameAction.keys()
+	self._action_movements = []
+	for action in GamePlatforms.GAME_ACTION_TO_MOVE_DIR:
+		if self.player != GameInputs.GAME_ACTION_TO_PLAYER[action]:
+			continue
+		
+		var dir = GamePlatforms.GAME_ACTION_TO_MOVE_DIR[action]
+		self._action_movements.append([dir, action_to_event_str[action]])
+	
 	if self.player == GameLogic.Player.PLAYER_1:
-		self._action_movements = [
-			[Vector2(-1, 0), GameInputs.P1_LEFT_STR],
-			[Vector2(1, 0), GameInputs.P1_RIGHT_STR],
-			[Vector2(0, 1), GameInputs.P1_UP_STR],
-			[Vector2(0, -1), GameInputs.P1_DOWN_STR],
-		]
 		self._action_toggle_facing = GameInputs.P1_TOGGLE_FACING_STR
 	else:
-		self._action_movements = [
-			[Vector2(-1, 0), GameInputs.P2_LEFT_STR],
-			[Vector2(1, 0), GameInputs.P2_RIGHT_STR],
-			[Vector2(0, 1), GameInputs.P2_UP_STR],
-			[Vector2(0, -1), GameInputs.P2_DOWN_STR],
-		]
 		self._action_toggle_facing = GameInputs.P2_TOGGLE_FACING_STR
 
 func _toggle_facing():

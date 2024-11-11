@@ -12,8 +12,3 @@ func _init(_path: String) -> void:
 	self.sec_per_beat = 60.0 / 137.0
 	self.beats_per_measure = 3
 	self.sec_per_measure = self.sec_per_beat * self.beats_per_measure
-	self.events = [
-		SongTimer.SongTimerEvent.new(20.0, func(_obj): print_debug("yay 20")),
-		SongTimer.SongTimerEvent.new(4.0, func(_obj): print_debug("yay 4")),
-		SongTimer.SongTimerEvent.new(15.0, func(_obj): print_debug("yay 15"))
-	]

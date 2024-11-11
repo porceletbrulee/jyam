@@ -1,13 +1,17 @@
 extends Node3D
 
 var audio_player = null
-var song_timer = null
+var game_state: GameState = null
+var song_timer: SongTimer = null
 
 var _scene_debug_ref = null
 var _last_beats: int = -1
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	Ring._unittest()
+	MinHeap._unittest()
+	
 	GameInputs.init_input_map()
 	
 	var song_metadata = SongMetadata.new("res://songs/My_Castle_Town.json")
@@ -18,48 +22,69 @@ func _ready() -> void:
 	# TODO: figure out how to dynamically make and attach scripts/properties
 	var p1 = get_node("puppymaid2")
 	var p2 = get_node("player2")
-	var platform_layout = self._setup_platforms(Vector2(1,0), Vector2(2,2))
+	var platforms = self._setup_platforms()
 	
-	p1.scene_ready(
-		song_metadata,
-		platform_layout,
-		Vector2(1,0),
+	var dancer1 = GameDancer.new(
 		GameLogic.Player.PLAYER_1,
-		p2)
-	p2.scene_ready(
-		song_metadata,
-		platform_layout,
-		Vector2(2,2),
+		p1,
+		Vector2(1, 0),
+	)
+	var dancer2 = GameDancer.new(
 		GameLogic.Player.PLAYER_2,
-		p1)
-	
+		p2,
+		Vector2(2, 2),		
+	)
+
 	self.audio_player = get_node("AudioStreamPlayer")
 	var song = load("res://songs/My_Castle_Town.ogg")
 	self.audio_player.stream = song
-	
+
 	self.song_timer = SongTimer.new(
 		self.audio_player,
 		song_metadata,
 		null,
 	)
+
+	self.game_state = GameState.new(
+		song_timer,
+		platforms,
+		[dancer1, dancer2],
+	)
+
+	p1.scene_ready(
+		song_metadata,
+		platforms,
+		Vector2(0, 1),
+		GameLogic.Player.PLAYER_1,
+		p2)
+	p2.scene_ready(
+		song_metadata,
+		platforms,
+		Vector2(2,2),
+		GameLogic.Player.PLAYER_2,
+		p1)
+	
 	self.song_timer.play()
 
-func _setup_platforms(p1_loc: Vector2, p2_loc: Vector2):
-	var plats = [
-		[null, null, null],	
-		[null, null, null],	
-		[null, null, null],
+func _setup_platforms():
+	# on screen, row 0 is closest to the camera
+	var plat_nums = [
+		[0, 1, 2],
+		[3, 4, 5],
+		[6, 7, 8],
 	];
-	var rows = plats.size()
-	var cols = plats[0].size()
-	for i in range(0, rows * cols):
-		var child_name = "platform" + str(i);
-		var plat = get_node("platforms/" + child_name)
-		var row = i % 3
-		@warning_ignore("integer_division") var col = i / 3
-		plats[row][col] = plat
+		
+	var plats = []	
+	for row in plat_nums:
+		var plat_row = []
+		for num in row:
+			var child_name = "platform" + str(num);
+			var plat = get_node("platforms/" + child_name)
+			
+			plat_row.append(plat)
+		plats.append(plat_row)
 
-	return GamePlatforms.new(plats, p1_loc, p2_loc)
+	return GamePlatforms.new(plats)
 
 func _input(event):
 	if event.is_action_pressed("ui_text_delete"):
@@ -78,8 +103,11 @@ func _input(event):
 		print_debug("rate {0} last {1} next {2} latency {3} timer {4}".format(
 			[rate, last_mix_time, next_mix_time, latency, self.song_timer._last_sec]))
 	
+	self.game_state.input(event)
+	
 func _physics_process(delta: float) -> void:
-	self.song_timer.physics_process(delta)
+	self.game_state.physics_process(delta)
+	
 	if self._scene_debug_ref.visible:
 		if self._last_beats != self.song_timer.beats:
 			self._last_beats = self.song_timer.beats

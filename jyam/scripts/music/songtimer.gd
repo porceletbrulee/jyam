@@ -1,7 +1,6 @@
 class_name SongTimer extends RefCounted
 
 const AUDIO_LATENCY_UPDATE_RATE = 60
-const DEBUG = true
 
 var _asp_ref = null
 var _song_metadata_ref = null
@@ -13,27 +12,41 @@ var _last_sec = -100.0
 var _beats: int = -1
 
 var _event_context = null
-var _events = null
-var _next_event = null
+var events: MinHeap
 
 var _latency_warned = false
 
-class SongTimerEvent extends RefCounted:
-	var time = 0.0
-	var callback = null
-
-	# @param playback_position_time: float time relative to song playback time
-	# @param callback: should be func(obj: Object), where obj should be consistent
-	func _init(playback_position_time: float, pcallback: Callable):
-		self.time = playback_position_time
+class BaseEvent extends RefCounted:
+	var start_sec: float
+	var trigger_sec: float
+	var callback: Callable
+	
+	# @param pstart_sec: when this event was inserted (some events may be
+	#					 inserted before song starts)
+	# @param ptrigger_sec: when this event will be triggered
+	func _init(pstart_sec: float, ptrigger_sec: float, pcallback: Callable):
+		self.start_sec = pstart_sec
+		self.trigger_sec = ptrigger_sec
 		self.callback = pcallback
 
-	static func sort_asc(left: SongTimerEvent, right: SongTimerEvent) -> bool:
-		return left.time < right.time
+	# called when event triggers
+	func do(context):
+		self.callback.call(context)
+		
+	static func sort_asc(left, right) -> bool:
+		# BaseEvent or any of its child classes
+		return left.trigger_sec < right.trigger_sec
 
-	static func sort_desc(left: SongTimerEvent, right: SongTimerEvent) -> bool:
-		return left.time > right.time
-
+# should only be instantiated after the song starts
+class Event extends SongTimer.BaseEvent:
+	func _init(song_timer_ref: SongTimer, pdelay: float, pcallback: Callable):
+		var pstart_sec = song_timer_ref.curr_sec
+		var ptrigger_sec = pstart_sec + pdelay
+		super(pstart_sec, ptrigger_sec, pcallback)
+		
+	func _to_string() -> String:
+		return "SongTimer.Event({0}, {1})".format([
+			self.start_sec, self.trigger_sec])
 
 # @param event_context: Object passed into event calls
 func _init(asp: AudioStreamPlayer,
@@ -46,13 +59,12 @@ func _init(asp: AudioStreamPlayer,
 	self._process_counter = 1
 	self._last_sec = 0.0
 	
-	var events = song_metadata.events
-	# we want the lowest times at the end to pop from the back
-	events.sort_custom(SongTimerEvent.sort_desc)
+	self.events = MinHeap.new(SongTimer.BaseEvent.sort_asc)
+	
+	for event in song_metadata.events:
+		self.events.push(event)
 	
 	self._event_context = event_context
-	self._events = events
-	self._next_event = events.pop_back()
 
 func play() -> void:
 	self._asp_ref.play()
@@ -61,15 +73,27 @@ var beats_per_measure: int:
 	get:
 		return self._song_metadata_ref.beats_per_measure
 	set(_value):
-		print_debug("don't set this")
+		assert(false, "don't set beats_per_measure")
+
+var sec_per_beat: float:
+	get:
+		return self._song_metadata_ref.sec_per_beat
+	set(_value):
+		assert(false, "don't set sec_per_beat")
 
 var beats: int:
 	get:
 		return self._beats
 	set(_value):
-		print_debug("cannot set beat directly")
+		assert(false, "don't set beats")
 
-func _curr_sec() -> float:
+var curr_sec: float:
+	get:
+		return self._last_sec
+	set(_value):
+		assert(false, "cannot set curr_sec")
+
+func _update_curr_sec() -> float:
 	# https://docs.godotengine.org/en/stable/tutorials/audio/sync_with_audio.html
 	var pos = self._asp_ref.get_playback_position()
 	var last_mix = AudioServer.get_time_since_last_mix()
@@ -84,6 +108,9 @@ func _curr_sec() -> float:
 			self._latency_warned = true
 	return result
 
+func insert_event(event: SongTimer.Event) -> bool:
+	return self.events.push(event)
+
 func physics_process(_delta: float) -> void:
 	if not self._asp_ref.playing:
 		return
@@ -93,16 +120,14 @@ func physics_process(_delta: float) -> void:
 		self._output_latency = AudioServer.get_output_latency()
 		self._process_counter = 0
 
-	var sec = self._curr_sec()
+	var sec = self._update_curr_sec()
 	if sec > self._last_sec:
 		self._last_sec = sec
 		# update beat counter
 		self._beats = int(self._last_sec / self._song_metadata_ref.sec_per_beat)
-		
-	if self._next_event != null and self._last_sec > self._next_event.time:
-		if DEBUG:
-			print_debug("last_pos {0} event {1}".format(
-				[self._last_sec, self._next_event.time]))
-		self._next_event.callback.call(self._event_context)
-		self._next_event = self._events.pop_back()
+	
+	var next_event = self.events.peek_root()
+	if next_event != null and next_event.trigger_sec >= self._last_sec:
+		next_event = self.events.pop_root()
+		next_event.do(self._event_context)
 	

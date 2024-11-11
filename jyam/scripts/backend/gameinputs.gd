@@ -25,17 +25,6 @@ const P2_LEFT_STR = "P2_LEFT"
 const P2_RIGHT_STR = "P2_RIGHT"
 const P2_TOGGLE_FACING_STR = "P2_TOGGLE_FACING"
 
-const GAME_ACTION_TO_DIR = {
-	GameAction.P1_UP: Vector2(0, 1),
-	GameAction.P1_DOWN: Vector2(0, -1),
-	GameAction.P1_LEFT: Vector2(-1, 0),
-	GameAction.P1_RIGHT: Vector2(1, 0),
-	GameAction.P2_UP: Vector2(0, 1),
-	GameAction.P2_DOWN: Vector2(0, -1),
-	GameAction.P2_LEFT: Vector2(-1, 0),
-	GameAction.P2_RIGHT: Vector2(1, 0),
-}
-
 const GAME_ACTION_TO_PLAYER = {
 	GameAction.P1_UP: GameLogic.Player.PLAYER_1,
 	GameAction.P1_DOWN: GameLogic.Player.PLAYER_1,
@@ -63,17 +52,8 @@ class GameActionEventMove extends GameActionEvent:
 			   song_sec: float,
 			   action: GameInputs.GameAction):
 		super(event_player, song_sec)
-		match action:
-			GameAction.P1_UP, GameAction.P2_UP:
-				self.dir = Vector2(0, 1)
-			GameAction.P1_DOWN, GameAction.P2_DOWN:
-				self.dir = Vector2(0, -1)
-			GameAction.P1_LEFT, GameAction.P2_LEFT:
-				self.dir = Vector2(-1, 0)
-			GameAction.P1_RIGHT, GameAction.P2_RIGHT:
-				self.dir = Vector2(1, 0)
-			_:
-				assert(false)
+		self.dir = GamePlatforms.GAME_ACTION_TO_MOVE_DIR.get(action)
+		assert(self.dir != null)
 
 class GameActionEventSetFacing extends GameActionEvent:
 	var facing: GameLogic.Facing
