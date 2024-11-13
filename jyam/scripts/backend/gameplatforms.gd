@@ -51,6 +51,13 @@ class Platform extends RefCounted:
 		return "GamePlatforms.Platform({0},{1},{2})".format(
 			[self.pos, self.dancer, self.node3d.name])
 
+	func transform_origin() -> Vector3:
+		var t = self.node3d.transform
+		return Vector3(
+			t.origin.x,
+			t.origin.y,  # FIXME: add a fraction of the height of platform
+			t.origin.z)
+
 # m is Array[Array[Node3D]] but that's not supported :(
 func _init(m: Array):
 	var row_i = 0

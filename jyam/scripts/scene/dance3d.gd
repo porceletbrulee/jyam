@@ -27,12 +27,12 @@ func _ready() -> void:
 	var dancer1 = GameDancer.new(
 		GameLogic.Player.PLAYER_1,
 		p1,
-		Vector2(1, 0),
+		Vector2(0, 1),
 	)
 	var dancer2 = GameDancer.new(
 		GameLogic.Player.PLAYER_2,
 		p2,
-		Vector2(2, 2),		
+		Vector2(2, 2),
 	)
 
 	self.audio_player = get_node("AudioStreamPlayer")
@@ -53,14 +53,12 @@ func _ready() -> void:
 
 	p1.scene_ready(
 		song_metadata,
-		platforms,
-		Vector2(0, 1),
+		platforms.get_platform(dancer1.platform_pos),
 		GameLogic.Player.PLAYER_1,
 		p2)
 	p2.scene_ready(
 		song_metadata,
-		platforms,
-		Vector2(2,2),
+		platforms.get_platform(dancer2.platform_pos),
 		GameLogic.Player.PLAYER_2,
 		p1)
 	

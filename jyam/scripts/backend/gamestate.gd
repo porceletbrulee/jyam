@@ -23,7 +23,8 @@ func _init(song_timer: SongTimer,
 
 	self._paused = false
 
-	self._last_measure = 0
+	self._last_beat = -1
+	self._last_measure = -1
 
 func anticipation_meter(player: GameLogic.Player) -> int:
 	var val = self._player_to_anticipation_meter.get(player)
@@ -37,28 +38,29 @@ func _perform_action(action: GameInputs.GameAction) -> bool:
 		var dancer = self._player_to_dancer[player]
 		assert(dancer != null)
 		
-		if dancer.moving:
+		if not dancer.can_move():
 			# TODO: allow some input buffering
 			return false
 		
 		var dst_plat = self._platforms_ref.attempt_begin_move(dancer, move_dir)
-		
 		if dst_plat == null:
 			return false
 
-		dancer.moving = true
-		# FIXME: trigger dancer move animation
+		var src_plat = self._platforms_ref.get_platform(dancer.platform_pos)
+		assert(src_plat != null)
+
+		# a move takes 1 beat
+		var move_duration_sec = self._song_timer_ref.sec_per_beat
+		dancer.trigger_move(src_plat, dst_plat, move_duration_sec)
 
 		# closures might be inefficient and/or hard to debug
 		var finish_move = func(_context):
 			self._platforms_ref.finish_move(dancer, dst_plat)
-
-			dancer.moving = false
-			# FIXME: trigger dancer idle animation
+			dancer.finish_move(self._song_timer_ref)
 			
 		var ev = SongTimer.Event.new(
 			self._song_timer_ref,
-			self._song_timer_ref.sec_per_beat,
+			move_duration_sec,
 			finish_move,
 		)
 		self._song_timer_ref.insert_event(ev)
@@ -92,8 +94,6 @@ func _on_beat():
 		dancer.on_beat(self._song_timer_ref)
 
 func play_song():
-	for dancer in self._player_to_dancer.values():
-		dancer.trigger_transition(self._song_timer_ref, GameDancer.State.SOLO_IDLE)
 	self._song_timer_ref.play()
 
 func physics_process(delta: float) -> void:
