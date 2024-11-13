@@ -41,12 +41,12 @@ class GamePlatform extends RefCounted:
 	var pos: Vector2
 	var dancer: GameDancer = null
 	var node3d: Node3D = null
-	
+
 	func _init(ppos: Vector2, pnode3d: Node3D):
 		self.pos = ppos
 		self.node3d = pnode3d
 		self.dancer = null
-		
+
 	func _to_string() -> String:
 		return "GamePlatform({0},{1},{2})".format(
 			[self.pos, self.dancer, self.node3d.name])
@@ -64,7 +64,7 @@ func _init(m: Array):
 		self._cols = maxi(self._cols, col_i)
 		self._rows_array.append(curr_row)
 		row_i += 1
-	
+
 	self._rows = row_i
 
 func get_platform(pos: Vector2) -> GamePlatform:
@@ -73,7 +73,7 @@ func get_platform(pos: Vector2) -> GamePlatform:
 		if pos.y >= 0 and pos.y < row.size():
 			return row[pos.y]
 	return null
-	
+
 func set_dancer(dancer: GameDancer, dst: Vector2):
 	var dst_plat = self.get_platform(dst)
 	assert(dst_plat != null && dst_plat.dancer == null)
@@ -88,19 +88,19 @@ func attempt_begin_move(dancer: GameDancer, move_dir: Vector2) -> GamePlatform:
 	var dst_plat = self.get_platform(dst_pos)
 	if dst_plat == null:
 		return null
-	
+
 	if dst_plat.dancer != null:
 		return null
 
 	return dst_plat
-	
+
 func finish_move(dancer: GameDancer, dst_plat: GamePlatform):
 	var src_plat = self.get_platform(dancer.platform_pos)
 	assert(src_plat != null)
-	
+
 	src_plat.dancer = null
 	dst_plat.dancer = dancer
 	dancer.platform_pos = dst_plat.pos
-	
+
 func _to_string() -> String:
 	return str(self._rows_array)

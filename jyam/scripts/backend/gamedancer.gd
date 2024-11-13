@@ -56,7 +56,7 @@ func trigger_transition(song_timer: SongTimer, new_state: GameDancer.State):
 		print_debug("{0}: transition {1} -> {2}".format([
 			self, state_strings[self._state], state_strings[new_state]
 		]))
-	
+
 	assert(!self._is_move_state(new_state))
 	# try to keep GameDancer free of model/animation details
 	self._state = new_state

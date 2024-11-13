@@ -45,7 +45,7 @@ class GameActionEvent extends RefCounted:
 	func _init(event_player: GameLogic.Player, song_sec: float):
 		self.player = event_player
 		self.sec = song_sec
-		
+
 class GameActionEventMove extends GameActionEvent:
 	var dir = Vector2()
 	func _init(event_player: GameLogic.Player,
@@ -62,8 +62,8 @@ class GameActionEventSetFacing extends GameActionEvent:
 			   new_facing: GameLogic.Facing):
 		super(event_player, song_sec)
 		self.facing = new_facing
-		
-		
+
+
 const DEFAULT_KEYS = {
 	GameAction.P1_UP: KEY_W,
 	GameAction.P1_DOWN: KEY_S,
@@ -109,33 +109,33 @@ static func init_input_map() -> void:
 		DEFAULT_JOYPAD_BUTTONS,
 		DEFAULT_JOYPAD_MOTIONS,
 	)
-		
+
 static func _set_from_dicts(keys, buttons, motions):
 	for action in GameAction:
 		var action_value = GameAction[action]
 		InputMap.add_action(action)
 		InputMap.action_erase_events(action)
-		
+
 		var key_to_event = func(k):
 			var event = InputEventKey.new()
 			# TODO: dual keyboard or other weirdness won't get handled
 			event.set_device(0)
 			event.set_keycode(k)
 			return event
-			
+
 		var button_to_event = func(b):
 			var event = InputEventJoypadButton.new()
 			event.set_device(b[0])
 			event.set_button_index(b[1])
 			return event
-			
+
 		var motion_to_event = func(m):
 			var event = InputEventJoypadMotion.new()
 			event.set_device(m[0])
 			event.set_axis(m[1])
 			event.set_axis_value(m[2])
 			return event
-			
+
 		for t in [
 			[keys, key_to_event],
 			[buttons, button_to_event],
@@ -143,7 +143,7 @@ static func _set_from_dicts(keys, buttons, motions):
 		]:
 			var value_map = t[0]
 			var create_event = t[1]
-			
+
 			var value = value_map.get(action_value)
 			if value == null:
 				continue
