@@ -143,7 +143,7 @@ func physics_process(_delta: float) -> void:
 		@warning_ignore("integer_division") self._measure = self._beat / self.beats_per_measure
 	
 	var next_event = self.events.peek_root()
-	if next_event != null and next_event.trigger_sec >= self._last_sec:
+	if next_event != null and next_event.trigger_sec <= self._last_sec:
 		next_event = self.events.pop_root()
 		next_event.do(self._event_context)
 	
