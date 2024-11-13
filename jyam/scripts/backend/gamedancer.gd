@@ -64,8 +64,8 @@ func trigger_transition(song_timer: SongTimer, new_state: GameDancer.State):
 
 func trigger_move(
 	song_timer: SongTimer,
-	src_plat: GamePlatforms.GamePlatform,
-	dst_plat: GamePlatforms.GamePlatform,
+	src_plat: GamePlatforms.Platform,
+	dst_plat: GamePlatforms.Platform,
 	new_state: GameDancer.State):
 	if DEBUG:
 		var state_strings = GameDancer.State.keys()

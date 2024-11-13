@@ -193,7 +193,7 @@ func trigger_animation(song_timer: SongTimer, state: GameDancer.State):
 
 func trigger_move(
 	song_timer: SongTimer,
-	src_plat: GamePlatforms.GamePlatform,
-	dst_plat: GamePlatforms.GamePlatform,
+	src_plat: GamePlatforms.Platform,
+	dst_plat: GamePlatforms.Platform,
 	new_state: GameDancer.State):
 		pass

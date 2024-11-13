@@ -37,7 +37,7 @@ var cols: int:
 		assert(false, "don't set cols")
 
 
-class GamePlatform extends RefCounted:
+class Platform extends RefCounted:
 	var pos: Vector2
 	var dancer: GameDancer = null
 	var node3d: Node3D = null
@@ -48,7 +48,7 @@ class GamePlatform extends RefCounted:
 		self.dancer = null
 
 	func _to_string() -> String:
-		return "GamePlatform({0},{1},{2})".format(
+		return "GamePlatforms.Platform({0},{1},{2})".format(
 			[self.pos, self.dancer, self.node3d.name])
 
 # m is Array[Array[Node3D]] but that's not supported :(
@@ -59,7 +59,7 @@ func _init(m: Array):
 		var col_i = 0
 		for node in row:
 			var pos = Vector2(row_i, col_i)
-			curr_row.append(GamePlatform.new(pos, node))
+			curr_row.append(Platform.new(pos, node))
 			col_i += 1
 		self._cols = maxi(self._cols, col_i)
 		self._rows_array.append(curr_row)
@@ -67,7 +67,7 @@ func _init(m: Array):
 
 	self._rows = row_i
 
-func get_platform(pos: Vector2) -> GamePlatform:
+func get_platform(pos: Vector2) -> Platform:
 	if pos.x >= 0 and pos.x < self._rows_array.size():
 		var row = self._rows_array[pos.x]
 		if pos.y >= 0 and pos.y < row.size():
@@ -80,7 +80,7 @@ func set_dancer(dancer: GameDancer, dst: Vector2):
 	dst_plat.dancer = dancer
 
 # @returns dst_platform: the destination platform, null if invalid move
-func attempt_begin_move(dancer: GameDancer, move_dir: Vector2) -> GamePlatform:
+func attempt_begin_move(dancer: GameDancer, move_dir: Vector2) -> Platform:
 	var src_plat = self.get_platform(dancer.platform_pos)
 	assert(src_plat != null and src_plat.dancer == dancer)
 
@@ -94,7 +94,7 @@ func attempt_begin_move(dancer: GameDancer, move_dir: Vector2) -> GamePlatform:
 
 	return dst_plat
 
-func finish_move(dancer: GameDancer, dst_plat: GamePlatform):
+func finish_move(dancer: GameDancer, dst_plat: Platform):
 	var src_plat = self.get_platform(dancer.platform_pos)
 	assert(src_plat != null)
 
