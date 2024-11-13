@@ -9,7 +9,7 @@ var _output_latency = 0.0
 var _process_counter = 0
 var _last_sec = -100.0
 
-var _beats: int = -1
+var _beat: int = -1
 var _measure: int = -1
 
 var _event_context = null
@@ -68,7 +68,7 @@ func _init(asp: AudioStreamPlayer,
 	self._event_context = event_context
 
 func play() -> void:
-	self._beats = 0
+	self._beat = 0
 	self._measure = 0
 	self._asp_ref.play()
 
@@ -84,9 +84,15 @@ var sec_per_beat: float:
 	set(_value):
 		assert(false, "don't set sec_per_beat")
 
-var beats: int:
+var sec_per_measure: float:
 	get:
-		return self._beats
+		return self.sec_per_beat * self.beats_per_measure
+	set(_value):
+		assert(false, "don't set sec_per_measure")
+
+var beat: int:
+	get:
+		return self._beat
 	set(_value):
 		assert(false, "don't set beats")
 
@@ -133,8 +139,8 @@ func physics_process(_delta: float) -> void:
 	if sec > self._last_sec:
 		self._last_sec = sec
 		# update beat counter
-		self._beats = int(self._last_sec / self._song_metadata_ref.sec_per_beat)
-		@warning_ignore("integer_division") self._measure = self._beats / self.beats_per_measure
+		self._beat = int(self._last_sec / self._song_metadata_ref.sec_per_beat)
+		@warning_ignore("integer_division") self._measure = self._beat / self.beats_per_measure
 	
 	var next_event = self.events.peek_root()
 	if next_event != null and next_event.trigger_sec >= self._last_sec:

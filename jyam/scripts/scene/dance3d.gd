@@ -5,7 +5,7 @@ var game_state: GameState = null
 var song_timer: SongTimer = null
 
 var _scene_debug_ref = null
-var _last_beats: int = -1
+var _last_beat: int = -1
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -20,7 +20,7 @@ func _ready() -> void:
 	self._scene_debug_ref.set_visible(false)
 	
 	# TODO: figure out how to dynamically make and attach scripts/properties
-	var p1 = get_node("puppymaid2")
+	var p1 = get_node("player1")
 	var p2 = get_node("player2")
 	var platforms = self._setup_platforms()
 	
@@ -64,7 +64,7 @@ func _ready() -> void:
 		GameLogic.Player.PLAYER_2,
 		p1)
 	
-	self.song_timer.play()
+	self.game_state.play_song()
 
 func _setup_platforms():
 	# on screen, row 0 is closest to the camera
@@ -109,15 +109,15 @@ func _physics_process(delta: float) -> void:
 	self.game_state.physics_process(delta)
 	
 	if self._scene_debug_ref.visible:
-		if self._last_beats != self.song_timer.beats:
-			self._last_beats = self.song_timer.beats
+		if self._last_beat != self.song_timer.beat:
+			self._last_beat = self.song_timer.beat
 			
 			var beat_value = get_node("SceneDebug/ColorRect/BeatCounter/BeatCounterValue")	
 			var beat_total = get_node("SceneDebug/ColorRect/BeatCounter/BeatCounterTotal")
 			beat_value.set_value_no_signal(
 				float(
-					self._last_beats % self.song_timer.beats_per_measure
+					self._last_beat % self.song_timer.beats_per_measure
 				)
 			)
-			beat_total.set_value_no_signal(float(self._last_beats))
+			beat_total.set_value_no_signal(float(self._last_beat))
 			
