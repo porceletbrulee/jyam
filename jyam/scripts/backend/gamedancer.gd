@@ -78,7 +78,7 @@ func can_move() -> bool:
 	return (self._state != GameDancer.State.INVITING and
 			not GameDancer._is_move_state(self._state))
 
-func _trigger_idle_animation(song_timer: SongTimer, state: GameDancer.State):
+func _trigger_stationary_animation(song_timer: SongTimer, state: GameDancer.State):
 	var info = Dancer3D.STATE_TO_ANIMATION_INFO.get(state)
 	if info != null:
 		var scale_type = info[1]
@@ -90,7 +90,9 @@ func _trigger_idle_animation(song_timer: SongTimer, state: GameDancer.State):
 				duration_sec = song_timer.sec_per_measure
 		self.dancer3d.trigger_animation(duration_sec, state)
 
-func trigger_idle_transition(song_timer: SongTimer, new_state: GameDancer.State) -> bool:
+func trigger_stationary_transition(
+	song_timer: SongTimer,
+	new_state: GameDancer.State) -> bool:
 	if DEBUG:
 		var state_strings = GameDancer.State.keys()
 		print_debug("{0}: transition {1} -> {2}".format([
@@ -101,7 +103,7 @@ func trigger_idle_transition(song_timer: SongTimer, new_state: GameDancer.State)
 	self._state = new_state
 
 	# TODO: try to keep GameDancer free of model/animation details
-	self._trigger_idle_animation(song_timer, new_state)
+	self._trigger_stationary_animation(song_timer, new_state)
 	return true
 
 func trigger_move(
@@ -125,7 +127,7 @@ func finish_move(song_timer: SongTimer):
 
 	self.dancer3d.finish_move()
 	var new_state = self._transition_idle_state()
-	self.trigger_idle_transition(song_timer, new_state)
+	self.trigger_stationary_transition(song_timer, new_state)
 
 func on_beat(_song_timer: SongTimer):
 	pass
@@ -134,6 +136,6 @@ func on_measure(song_timer: SongTimer):
 	# restart idle animation if already idle
 	match self._state:
 		GameDancer.State.SOLO_IDLE, GameDancer.State.CLOSED_IDLE_LEAD, GameDancer.State.CLOSED_IDLE_FOLLOW:
-			self._trigger_idle_animation(song_timer, self._state)
+			self._trigger_stationary_animation(song_timer, self._state)
 		_:
 			pass
