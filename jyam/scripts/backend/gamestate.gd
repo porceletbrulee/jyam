@@ -1,5 +1,5 @@
 class_name GameState extends RefCounted
-		
+
 var _song_timer_ref: SongTimer = null
 var _platforms_ref: GamePlatforms = null
 var _player_to_dancer: Dictionary
@@ -31,44 +31,47 @@ func anticipation_meter(player: GameLogic.Player) -> int:
 	assert(val != null)
 	return val
 
+func _move_player(player: GameLogic.Player, move_dir: Vector2):
+	var dancer = self._player_to_dancer[player]
+	assert(dancer != null)
+
+	if not dancer.can_move():
+		# TODO: allow some input buffering
+		return false
+
+	var dst_plat = self._platforms_ref.attempt_begin_move(dancer, move_dir)
+	if dst_plat == null:
+		return false
+
+	var src_plat = self._platforms_ref.get_platform(dancer.platform_pos)
+	assert(src_plat != null)
+
+	# a move takes 1 beat
+	var move_duration_sec = self._song_timer_ref.sec_per_beat
+	dancer.trigger_move(src_plat, dst_plat, move_duration_sec)
+
+	# closures might be inefficient and/or hard to debug
+	var finish_move = func(_context):
+		self._platforms_ref.finish_move(dancer, dst_plat)
+		dancer.finish_move(self._song_timer_ref)
+
+	var ev = SongTimer.Event.new(
+		self._song_timer_ref,
+		move_duration_sec,
+		finish_move,
+	)
+	self._song_timer_ref.insert_event(ev)
+
+	return true
+
 func _perform_action(action: GameInputs.GameAction) -> bool:
 	var player = GameInputs.GAME_ACTION_TO_PLAYER.get(action)
 	var move_dir = GamePlatforms.GAME_ACTION_TO_MOVE_DIR.get(action)
 	if move_dir != null:
-		var dancer = self._player_to_dancer[player]
-		assert(dancer != null)
-		
-		if not dancer.can_move():
-			# TODO: allow some input buffering
-			return false
-		
-		var dst_plat = self._platforms_ref.attempt_begin_move(dancer, move_dir)
-		if dst_plat == null:
-			return false
+		return self._move_player(player, move_dir)
 
-		var src_plat = self._platforms_ref.get_platform(dancer.platform_pos)
-		assert(src_plat != null)
-
-		# a move takes 1 beat
-		var move_duration_sec = self._song_timer_ref.sec_per_beat
-		dancer.trigger_move(src_plat, dst_plat, move_duration_sec)
-
-		# closures might be inefficient and/or hard to debug
-		var finish_move = func(_context):
-			self._platforms_ref.finish_move(dancer, dst_plat)
-			dancer.finish_move(self._song_timer_ref)
-			
-		var ev = SongTimer.Event.new(
-			self._song_timer_ref,
-			move_duration_sec,
-			finish_move,
-		)
-		self._song_timer_ref.insert_event(ev)
-		
-		return true
-		
 	return false
-		
+
 func input(event: InputEvent) -> void:
 	# TODO: does _input race with _physics_process??
 	for action_str in GameInputs.GameAction:
@@ -99,7 +102,7 @@ func play_song():
 func physics_process(delta: float) -> void:
 	# update SongTimer first so time is up-to-date
 	self._song_timer_ref.physics_process(delta)
-	
+
 	var beat = self._song_timer_ref.beat
 	if self._last_beat != beat:
 		if self._last_beat + 1 != beat:
@@ -108,7 +111,7 @@ func physics_process(delta: float) -> void:
 			]))
 		self._on_beat()
 		self._last_beat = beat
-	
+
 	var measure = self._song_timer_ref.measure
 	if measure != self._last_measure:
 		if self._last_measure + 1 != measure:
