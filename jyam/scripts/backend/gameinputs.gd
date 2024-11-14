@@ -15,18 +15,6 @@ enum Action {
 	P2_INVITE,
 }
 
-# XXX: this sucks, add test
-const P1_UP_STR = "P1_UP"
-const P1_DOWN_STR = "P1_DOWN"
-const P1_LEFT_STR = "P1_LEFT"
-const P1_RIGHT_STR = "P1_RIGHT"
-const P1_TOGGLE_FACING_STR = "P1_TOGGLE_FACING"
-const P2_UP_STR = "P2_UP"
-const P2_DOWN_STR = "P2_DOWN"
-const P2_LEFT_STR = "P2_LEFT"
-const P2_RIGHT_STR = "P2_RIGHT"
-const P2_TOGGLE_FACING_STR = "P2_TOGGLE_FACING"
-
 const ACTION_TO_PLAYER = {
 	Action.P1_UP: GameLogic.Player.PLAYER_1,
 	Action.P1_DOWN: GameLogic.Player.PLAYER_1,
