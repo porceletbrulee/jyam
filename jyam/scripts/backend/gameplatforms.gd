@@ -39,17 +39,17 @@ var cols: int:
 
 class Platform extends RefCounted:
 	var pos: Vector2
-	var dancer: GameDancer = null
+	var dancers: Dictionary
 	var node3d: Node3D = null
 
 	func _init(ppos: Vector2, pnode3d: Node3D):
 		self.pos = ppos
 		self.node3d = pnode3d
-		self.dancer = null
+		self.dancers = Dictionary()
 
 	func _to_string() -> String:
 		return "GamePlatforms.Platform({0},{1},{2})".format(
-			[self.pos, self.dancer, self.node3d.name])
+			[self.pos, self.dancers, self.node3d.name])
 
 	func transform_origin() -> Vector3:
 		var t = self.node3d.transform
@@ -83,20 +83,17 @@ func get_platform(pos: Vector2) -> Platform:
 
 func set_dancer(dancer: GameDancer, dst: Vector2):
 	var dst_plat = self.get_platform(dst)
-	assert(dst_plat != null && dst_plat.dancer == null)
-	dst_plat.dancer = dancer
+	assert(dst_plat != null)
+	dst_plat.dancers[dancer.key] = dancer
 
 # @returns dst_platform: the destination platform, null if invalid move
 func attempt_begin_move(dancer: GameDancer, move_dir: Vector2) -> Platform:
 	var src_plat = self.get_platform(dancer.platform_pos)
-	assert(src_plat != null and src_plat.dancer == dancer)
+	assert(src_plat != null and src_plat.dancers.has(dancer.key))
 
 	var dst_pos = dancer.platform_pos + move_dir
 	var dst_plat = self.get_platform(dst_pos)
 	if dst_plat == null:
-		return null
-
-	if dst_plat.dancer != null:
 		return null
 
 	return dst_plat
@@ -105,8 +102,8 @@ func finish_move(dancer: GameDancer, dst_plat: Platform):
 	var src_plat = self.get_platform(dancer.platform_pos)
 	assert(src_plat != null)
 
-	src_plat.dancer = null
-	dst_plat.dancer = dancer
+	src_plat.dancers.erase(dancer.key)
+	dst_plat.dancers[dancer.key] = dancer
 	dancer.platform_pos = dst_plat.pos
 
 func _to_string() -> String:
