@@ -6,11 +6,13 @@ enum GameAction {
 	P1_LEFT,
 	P1_RIGHT,
 	P1_TOGGLE_FACING,
+	P1_INVITE,
 	P2_UP,
 	P2_DOWN,
 	P2_LEFT,
 	P2_RIGHT,
 	P2_TOGGLE_FACING,
+	P2_INVITE,
 }
 
 # XXX: this sucks, add test
@@ -31,11 +33,13 @@ const GAME_ACTION_TO_PLAYER = {
 	GameAction.P1_LEFT: GameLogic.Player.PLAYER_1,
 	GameAction.P1_RIGHT: GameLogic.Player.PLAYER_1,
 	GameAction.P1_TOGGLE_FACING: GameLogic.Player.PLAYER_1,
+	GameAction.P1_INVITE: GameLogic.Player.PLAYER_1,
 	GameAction.P2_UP: GameLogic.Player.PLAYER_2,
 	GameAction.P2_DOWN: GameLogic.Player.PLAYER_2,
 	GameAction.P2_LEFT: GameLogic.Player.PLAYER_2,
 	GameAction.P2_RIGHT: GameLogic.Player.PLAYER_2,
 	GameAction.P2_TOGGLE_FACING: GameLogic.Player.PLAYER_2,
+	GameAction.P2_INVITE: GameLogic.Player.PLAYER_2,
 }
 
 class GameActionEvent extends RefCounted:
@@ -70,17 +74,21 @@ const DEFAULT_KEYS = {
 	GameAction.P1_LEFT: KEY_A,
 	GameAction.P1_RIGHT: KEY_D,
 	GameAction.P1_TOGGLE_FACING: KEY_R,
+	GameAction.P1_INVITE: KEY_E,
 	GameAction.P2_UP: KEY_UP,
 	GameAction.P2_DOWN: KEY_DOWN,
 	GameAction.P2_LEFT: KEY_LEFT,
 	GameAction.P2_RIGHT: KEY_RIGHT,
 	GameAction.P2_TOGGLE_FACING: KEY_SEMICOLON,
+	GameAction.P2_INVITE: KEY_L,
 }
 
 # TODO
 const DEFAULT_JOYPAD_BUTTONS = {
 	GameAction.P1_TOGGLE_FACING: [0, JOY_BUTTON_Y],
+	GameAction.P1_INVITE: [0, JOY_BUTTON_X],
 	GameAction.P2_TOGGLE_FACING: [1, JOY_BUTTON_Y],
+	GameAction.P2_INVITE: [1, JOY_BUTTON_X],
 }
 
 const DEFAULT_JOYPAD_MOTIONS = {
