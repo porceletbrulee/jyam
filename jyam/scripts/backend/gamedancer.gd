@@ -18,6 +18,9 @@ const DEBUG = true
 
 var _state: GameDancer.State
 
+var _event_seq: int
+var _cancelled_seqs: Dictionary
+
 var _key: String
 
 var key: String:
@@ -32,6 +35,10 @@ func _init(pplayer: GameLogic.Player, pdancer3d: Dancer3D, ppos: Vector2):
 	self.platform_pos = ppos
 
 	self._state = GameDancer.State.SOLO_IDLE
+
+	self._event_seq = 1
+	self._cancelled_seqs = Dictionary()
+
 	self._key = GameLogic.Player.keys()[self.player] + "_" + self.dancer3d.name
 
 func _to_string() -> String:
@@ -75,8 +82,14 @@ func _transition_idle_state() -> GameDancer.State:
 			return GameDancer.State.SOLO_IDLE
 
 func can_move() -> bool:
-	return (self._state != GameDancer.State.INVITING and
+	return (not self.is_inviting() and
 			not GameDancer._is_move_state(self._state))
+
+func can_invite() -> bool:
+	return self._state == GameDancer.State.SOLO_IDLE
+
+func is_inviting() -> bool:
+	return self._state == GameDancer.State.INVITING
 
 func _trigger_stationary_animation(song_timer: SongTimer, state: GameDancer.State):
 	var info = Dancer3D.STATE_TO_ANIMATION_INFO.get(state)
@@ -128,6 +141,38 @@ func finish_move(song_timer: SongTimer):
 	self.dancer3d.finish_move()
 	var new_state = self._transition_idle_state()
 	self.trigger_stationary_transition(song_timer, new_state)
+
+func _new_cancellable_seq() -> int:
+	var seq = self._event_seq
+	self._cancelled_seqs[seq] = false
+	self._event_seq = seq + 1
+	return seq
+
+# @returns: Callable, caller should check is_null
+func trigger_invite(song_timer: SongTimer) -> Callable:
+	if not self.can_invite():
+		return Callable()
+
+	self.trigger_stationary_transition(song_timer,
+									   GameDancer.State.INVITING)
+	var seq = self._new_cancellable_seq()
+	var _invite_expired = func(_context):
+		if self._cancelled_seqs.get(seq, true):
+			if DEBUG:
+				print_debug("{0}: skipping invite_expired for seq {1}".format([
+					self, seq
+				]))
+			return
+
+		self.invite_expired(song_timer)
+		# TODO: may race with accepting invite
+		self._cancelled_seqs.erase(seq)
+
+	return _invite_expired
+
+func invite_expired(song_timer: SongTimer):
+	assert(self._state == GameDancer.State.INVITING)
+	self.trigger_stationary_transition(song_timer, GameDancer.State.SOLO_IDLE)
 
 func on_beat(_song_timer: SongTimer):
 	pass

@@ -64,11 +64,35 @@ func _move_player(player: GameLogic.Player, move_dir: Vector2):
 
 	return true
 
+func _invite_player(player: GameLogic.Player) -> bool:
+	var dancer = self._player_to_dancer[player]
+	assert(dancer != null)
+
+	if not dancer.can_invite():
+		return false
+
+	var invite_expired = dancer.trigger_invite(self._song_timer_ref)
+	if invite_expired.is_null():
+		return false
+
+	var ev = SongTimer.Event.new(
+		self._song_timer_ref,
+		self._song_timer_ref.sec_per_measure * 3,
+		invite_expired,
+	)
+	self._song_timer_ref.insert_event(ev)
+
+	return true
+
 func _perform_action(action: GameInputs.Action) -> bool:
 	var player = GameInputs.ACTION_TO_PLAYER.get(action)
 	var move_dir = GamePlatforms.ACTION_TO_MOVE_DIR.get(action)
 	if move_dir != null:
 		return self._move_player(player, move_dir)
+
+	if (action == GameInputs.Action.P1_INVITE or
+		action == GameInputs.Action.P2_INVITE):
+		return self._invite_player(player)
 
 	return false
 
