@@ -64,9 +64,9 @@ func _move_player(player: GameLogic.Player, move_dir: Vector2):
 
 	return true
 
-func _perform_action(action: GameInputs.GameAction) -> bool:
-	var player = GameInputs.GAME_ACTION_TO_PLAYER.get(action)
-	var move_dir = GamePlatforms.GAME_ACTION_TO_MOVE_DIR.get(action)
+func _perform_action(action: GameInputs.Action) -> bool:
+	var player = GameInputs.ACTION_TO_PLAYER.get(action)
+	var move_dir = GamePlatforms.ACTION_TO_MOVE_DIR.get(action)
 	if move_dir != null:
 		return self._move_player(player, move_dir)
 
@@ -74,9 +74,9 @@ func _perform_action(action: GameInputs.GameAction) -> bool:
 
 func input(event: InputEvent) -> void:
 	# TODO: does _input race with _physics_process??
-	for action_str in GameInputs.GameAction:
+	for action_str in GameInputs.Action:
 		if event.is_action_pressed(action_str):
-			var action = GameInputs.GameAction[action_str]
+			var action = GameInputs.Action[action_str]
 			self._perform_action(action)
 
 func _on_measure():

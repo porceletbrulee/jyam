@@ -13,15 +13,15 @@ var _rows_array: Array
 var _rows: int
 var _cols: int
 
-const GAME_ACTION_TO_MOVE_DIR = {
-	GameInputs.GameAction.P1_UP: Vector2(1, 0),
-	GameInputs.GameAction.P1_DOWN: Vector2(-1, 0),
-	GameInputs.GameAction.P1_LEFT: Vector2(0, -1),
-	GameInputs.GameAction.P1_RIGHT: Vector2(0, 1),
-	GameInputs.GameAction.P2_UP: Vector2(1, 0),
-	GameInputs.GameAction.P2_DOWN: Vector2(-1, 0),
-	GameInputs.GameAction.P2_LEFT: Vector2(0, -1),
-	GameInputs.GameAction.P2_RIGHT: Vector2(0, 1),
+const ACTION_TO_MOVE_DIR = {
+	GameInputs.Action.P1_UP: Vector2(1, 0),
+	GameInputs.Action.P1_DOWN: Vector2(-1, 0),
+	GameInputs.Action.P1_LEFT: Vector2(0, -1),
+	GameInputs.Action.P1_RIGHT: Vector2(0, 1),
+	GameInputs.Action.P2_UP: Vector2(1, 0),
+	GameInputs.Action.P2_DOWN: Vector2(-1, 0),
+	GameInputs.Action.P2_LEFT: Vector2(0, -1),
+	GameInputs.Action.P2_RIGHT: Vector2(0, 1),
 }
 
 var rows: int:
