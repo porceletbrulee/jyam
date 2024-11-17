@@ -1,10 +1,11 @@
-extends Node3D
+class_name Dance3D extends Node3D
 
 var audio_player = null
 var game_state: GameState = null
 var song_timer: SongTimer = null
 
 var _scene_debug_ref = null
+var _ui_player_to_meter: Dictionary
 var _last_beat: int = -1
 
 # Called when the node enters the scene tree for the first time.
@@ -18,6 +19,10 @@ func _ready() -> void:
 
 	self._scene_debug_ref = get_node("SceneDebug")
 	self._scene_debug_ref.set_visible(false)
+
+	self._ui_player_to_meter = Dictionary()
+	self._ui_player_to_meter[GameLogic.Player.PLAYER_1] = get_node("hud/TopMargin/TopHbox/Player1Meter")
+	self._ui_player_to_meter[GameLogic.Player.PLAYER_2] = get_node("hud/TopMargin/TopHbox/Player2Meter")
 
 	# TODO: figure out how to dynamically make and attach scripts/properties
 	var p1 = get_node("player1")
@@ -45,7 +50,11 @@ func _ready() -> void:
 		null,
 	)
 
+	# FIXME: this will be a circular reference and godot will not clean it up
+	# Dance3D should be a child of GameState and there should be a new root
+	# for GameState to do _physics_process and _input
 	self.game_state = GameState.new(
+		self,
 		song_timer,
 		platforms,
 		[dancer1, dancer2],
@@ -83,6 +92,10 @@ func _setup_platforms():
 		plats.append(plat_row)
 
 	return GamePlatforms.new(plats)
+
+func update_player_meter(player: GameLogic.Player, meter: int):
+	var bar = self._ui_player_to_meter[player]
+	bar.value = meter
 
 func _input(event):
 	if event.is_action_pressed("ui_text_delete"):

@@ -1,5 +1,6 @@
 class_name GameState extends RefCounted
 
+var _dance3d_ref: Dance3D
 var _song_timer_ref: SongTimer = null
 var _platforms_ref: GamePlatforms = null
 var _player_to_dancer: Dictionary
@@ -10,9 +11,11 @@ var _paused: bool = false
 var _last_beat: int
 var _last_measure: int
 
-func _init(song_timer: SongTimer,
+func _init(dance3d: Dance3D,
+		   song_timer: SongTimer,
 		   platforms,
 		   dancers):
+	self._dance3d_ref = dance3d
 	self._song_timer_ref = song_timer
 	self._platforms_ref = platforms
 	self._player_to_dancer = {}
@@ -110,6 +113,7 @@ func _on_measure():
 		meter = mini(meter, GameLogic.ANTICIPATION_METER_MAX)
 		if old_meter != meter:
 			self._player_to_anticipation_meter[p] = meter
+			self._dance3d_ref.update_player_meter(p, meter)
 
 	for dancer in self._player_to_dancer.values():
 		# run the idle animation every measure
