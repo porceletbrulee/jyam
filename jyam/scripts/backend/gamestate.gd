@@ -34,6 +34,16 @@ func anticipation_meter(player: GameLogic.Player) -> int:
 	assert(val != null)
 	return val
 
+func _other_player(player: GameLogic.Player) -> GameLogic.Player:
+	assert(player != GameLogic.Player.PLAYER_NONE)
+	if player == GameLogic.Player.PLAYER_1:
+		return GameLogic.Player.PLAYER_2
+	else:
+		return GameLogic.Player.PLAYER_1
+
+func _enter_closed_position(lead: GameDancer, follow: GameDancer):
+	print_debug("enter: lead {0} follow {1}".format([lead, follow]))
+
 func _move_player(player: GameLogic.Player, move_dir: Vector2):
 	var dancer = self._player_to_dancer[player]
 	assert(dancer != null)
@@ -45,6 +55,15 @@ func _move_player(player: GameLogic.Player, move_dir: Vector2):
 	var dst_plat = self._platforms_ref.attempt_begin_move(dancer, move_dir)
 	if dst_plat == null:
 		return false
+
+	if dst_plat.dancers.size() > 0:
+		# there should only be one other dancer
+		var partner = dst_plat.dancers.values()[0]
+		if not partner.invite_accepted(self._song_timer_ref, dancer):
+			return false
+
+		self._enter_closed_position(partner, dancer)
+		return true
 
 	var src_plat = self._platforms_ref.get_platform(dancer.platform_pos)
 	assert(src_plat != null)

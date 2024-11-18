@@ -25,6 +25,10 @@ var _state: GameDancer.State = GameDancer.State.SOLO_IDLE
 var _event_seq: int
 var _cancelled_seqs: Dictionary
 
+# TODO: this might make more sense as "state related to self._state" that gets
+# reset to empty on every state transition
+var _pending_invite_seq: int = -1
+
 var _key: String
 
 var key: String:
@@ -163,19 +167,37 @@ func trigger_invite(song_timer: SongTimer) -> Callable:
 	self.trigger_stationary_transition(song_timer,
 									   GameDancer.State.INVITING)
 	var seq = self._new_cancellable_seq()
+	self._pending_invite_seq = seq
+
 	var _invite_expired = func(_context):
 		if self._cancelled_seqs.get(seq, true):
 			if DEBUG:
 				print_debug("{0}: skipping invite_expired for seq {1}".format([
 					self, seq
 				]))
+			self._cancelled_seqs.erase(seq)
 			return
 
+		assert(seq == self._pending_invite_seq)
 		self.invite_expired(song_timer)
 		# TODO: may race with accepting invite
 		self._cancelled_seqs.erase(seq)
+		self._pending_invite_seq = -1
 
 	return _invite_expired
+
+func invite_accepted(song_timer: SongTimer, partner: GameDancer) -> bool:
+	# TODO: may race with invite_expired...
+	if self._state != GameDancer.State.INVITING:
+		return false
+
+	self._cancelled_seqs[self._pending_invite_seq] = true
+	self._pending_invite_seq = -1
+
+	# the inviter always becomes the lead for now
+	self.trigger_stationary_transition(song_timer, GameDancer.State.ENTERING_CLOSED_POSITION_LEAD)
+	partner.trigger_stationary_transition(song_timer, GameDancer.State.ENTERING_CLOSED_POSITION_FOLLOW)
+	return true
 
 func invite_expired(song_timer: SongTimer):
 	assert(self._state == GameDancer.State.INVITING)
