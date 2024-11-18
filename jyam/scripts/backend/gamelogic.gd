@@ -11,6 +11,11 @@ enum Facing {
 	PARTNER,
 }
 
+enum DancersPosition {
+	SOLO = 1,
+	CLOSED,
+}
+
 const ANTICIPATION_METER_MAX = 100
 const ANTICIPATION_GROWTH_PER_MEASURE = 10
 

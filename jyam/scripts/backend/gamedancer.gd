@@ -1,13 +1,17 @@
 class_name GameDancer extends RefCounted
 
 enum State {
-	SOLO_IDLE = 0,
+	SOLO_IDLE = 1,
 	SOLO_MOVING,
 	INVITING,
-	CLOSED_IDLE_LEAD,
-	CLOSED_MOVING_LEAD,
-	CLOSED_IDLE_FOLLOW,
-	CLOSED_MOVING_FOLLOW,
+	ENTERING_CLOSED_POSITION_LEAD,
+	ENTERING_CLOSED_POSITION_FOLLOW,
+	CLOSED_BUFFER_INPUTS_LEAD,
+	CLOSED_MATCH_INPUTS_FOLLOW,
+	CLOSED_AUTO_LEAD,
+	CLOSED_AUTO_FOLLOW,
+	CLOSED_FINISH_LEAD,
+	CLOSED_FINISH_FOLLOW,
 }
 
 var player: GameLogic.Player
@@ -16,7 +20,7 @@ var platform_pos: Vector2 = GamePlatforms.NOWHERE
 
 const DEBUG = true
 
-var _state: GameDancer.State
+var _state: GameDancer.State = GameDancer.State.SOLO_IDLE
 
 var _event_seq: int
 var _cancelled_seqs: Dictionary
@@ -28,6 +32,21 @@ var key: String:
 		return self._key
 	set(_value):
 		assert(false, "cannot set key")
+
+var dancers_position: GameLogic.DancersPosition:
+	get:
+		match self._state:
+			GameDancer.State.CLOSED_BUFFER_INPUTS_LEAD, \
+			GameDancer.State.CLOSED_MATCH_INPUTS_FOLLOW, \
+			GameDancer.State.CLOSED_AUTO_LEAD, \
+			GameDancer.State.CLOSED_AUTO_FOLLOW, \
+			GameDancer.State.CLOSED_FINISH_LEAD, \
+			GameDancer.State.CLOSED_FINISH_FOLLOW:
+				return GameLogic.DancersPosition.CLOSED
+			_:
+				return GameLogic.DancersPosition.SOLO
+	set(_value):
+		assert(false, "cannot set dancers_position")
 
 func _init(pplayer: GameLogic.Player, pdancer3d: Dancer3D, ppos: Vector2):
 	self.player = pplayer
@@ -49,10 +68,6 @@ static func _is_move_state(state: GameDancer.State) -> bool:
 	match state:
 		GameDancer.State.SOLO_MOVING:
 			return true
-		GameDancer.State.CLOSED_MOVING_LEAD:
-			return true
-		GameDancer.State.CLOSED_MOVING_FOLLOW:
-			return true
 		_:
 			return false
 
@@ -60,10 +75,6 @@ func _transition_move_state() -> GameDancer.State:
 	match self._state:
 		GameDancer.State.SOLO_IDLE, GameDancer.State.SOLO_MOVING:
 			return GameDancer.State.SOLO_MOVING
-		GameDancer.State.CLOSED_IDLE_LEAD, GameDancer.State.CLOSED_MOVING_LEAD:
-			return GameDancer.State.CLOSED_MOVING_LEAD
-		GameDancer.State.CLOSED_IDLE_FOLLOW, GameDancer.State.CLOSED_MOVING_FOLLOW:
-			return GameDancer.State.CLOSED_MOVING_FOLLOW
 		_:
 			assert(false, "can't move in state {0}".format([self._state]))
 			return GameDancer.State.SOLO_IDLE
@@ -73,10 +84,6 @@ func _transition_idle_state() -> GameDancer.State:
 	match self._state:
 		GameDancer.State.SOLO_IDLE, GameDancer.State.SOLO_MOVING:
 			return GameDancer.State.SOLO_IDLE
-		GameDancer.State.CLOSED_IDLE_LEAD, GameDancer.State.CLOSED_MOVING_LEAD:
-			return GameDancer.State.CLOSED_IDLE_LEAD
-		GameDancer.State.CLOSED_IDLE_FOLLOW, GameDancer.State.CLOSED_MOVING_FOLLOW:
-			return GameDancer.State.CLOSED_IDLE_FOLLOW
 		_:
 			assert(false, "could not choose idle state {0}".format([self._state]))
 			return GameDancer.State.SOLO_IDLE
@@ -180,7 +187,9 @@ func on_beat(_song_timer: SongTimer):
 func on_measure(song_timer: SongTimer):
 	# restart idle animation if already idle
 	match self._state:
-		GameDancer.State.SOLO_IDLE, GameDancer.State.CLOSED_IDLE_LEAD, GameDancer.State.CLOSED_IDLE_FOLLOW:
+		GameDancer.State.SOLO_IDLE, \
+		GameDancer.State.CLOSED_BUFFER_INPUTS_LEAD, \
+		GameDancer.State.CLOSED_MATCH_INPUTS_FOLLOW:
 			self._trigger_stationary_animation(song_timer, self._state)
 		_:
 			pass

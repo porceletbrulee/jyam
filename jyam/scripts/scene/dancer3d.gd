@@ -15,10 +15,8 @@ const STATE_TO_ANIMATION_INFO = {
 	GameDancer.State.SOLO_IDLE: ["idle", ScaleType.PER_MEASURE],
 	GameDancer.State.SOLO_MOVING: ["solo_moveforward", ScaleType.PER_BEAT],
 	GameDancer.State.INVITING: ["invite", ScaleType.PER_MEASURE],
-	GameDancer.State.CLOSED_IDLE_LEAD: ["closedpos_idle_lead", ScaleType.PER_MEASURE],
-	GameDancer.State.CLOSED_MOVING_LEAD: ["closedpos_idle_lead", ScaleType.PER_BEAT],
-	GameDancer.State.CLOSED_IDLE_FOLLOW: ["closedpos_idle_follow", ScaleType.PER_MEASURE],
-	GameDancer.State.CLOSED_MOVING_FOLLOW: ["closedpos_idle_follow", ScaleType.PER_BEAT],
+	GameDancer.State.CLOSED_BUFFER_INPUTS_LEAD: ["closedpos_idle_lead", ScaleType.PER_MEASURE],
+	GameDancer.State.CLOSED_MATCH_INPUTS_FOLLOW: ["closedpos_idle_follow", ScaleType.PER_MEASURE],
 }
 
 var _song_metadata_ref: SongMetadata = null
