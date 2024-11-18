@@ -62,11 +62,11 @@ func _init(pplayer: GameLogic.Player, pdancer3d: Dancer3D, ppos: Vector2):
 	self._event_seq = 1
 	self._cancelled_seqs = Dictionary()
 
-	self._key = GameLogic.Player.keys()[self.player] + "_" + self.dancer3d.name
+	self._key = GameLogic.Player.find_key(self.player) + "_" + self.dancer3d.name
 
 func _to_string() -> String:
-	var state_strings = GameDancer.State.keys()
-	return "GameDancer({0}, {1})".format([self.key, state_strings[self._state]])
+	var state_strings = GameDancer.State
+	return "GameDancer({0}, {1})".format([self.key, state_strings.find_key(self._state)])
 
 static func _is_move_state(state: GameDancer.State) -> bool:
 	match state:
@@ -118,9 +118,10 @@ func trigger_stationary_transition(
 	song_timer: SongTimer,
 	new_state: GameDancer.State) -> bool:
 	if DEBUG:
-		var state_strings = GameDancer.State.keys()
 		print_debug("{0}: transition {1} -> {2}".format([
-			self, state_strings[self._state], state_strings[new_state]
+			self,
+			GameDancer.State.find_key(self._state),
+			GameDancer.State.find_key(new_state)
 		]))
 
 	assert(!GameDancer._is_move_state(new_state))
@@ -136,10 +137,9 @@ func trigger_move(
 	move_duration_sec: float):
 	var new_state = self._transition_move_state()
 	if DEBUG:
-		var state_strings = GameDancer.State.keys()
 		print_debug("{0}: move {1} {2} -> {3} {4}".format([
-			self, state_strings[self._state], src_plat,
-			state_strings[new_state], dst_plat,
+			self, GameDancer.State.find_key(self._state), src_plat,
+			GameDancer.State.find_key(new_state), dst_plat,
 		]))
 	self._state = new_state
 

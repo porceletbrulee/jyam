@@ -59,11 +59,10 @@ func scene_ready(
 	plat_point.y = self.transform.origin.y
 	self.transform.origin = plat_point
 
-	var action_keys = GameInputs.Action.keys()
 	if self.player == GameLogic.Player.PLAYER_1:
-		self._action_toggle_facing = action_keys[GameInputs.Action.P1_TOGGLE_FACING]
+		self._action_toggle_facing = GameInputs.Action.find_key(GameInputs.Action.P1_TOGGLE_FACING)
 	else:
-		self._action_toggle_facing = action_keys[GameInputs.Action.P2_TOGGLE_FACING]
+		self._action_toggle_facing = GameInputs.Action.find_key(GameInputs.Action.P2_TOGGLE_FACING)
 
 func _toggle_facing():
 	var new_facing = GameLogic.opposite_facing(self.facing)
