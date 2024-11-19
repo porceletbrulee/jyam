@@ -4,8 +4,9 @@ var audio_player = null
 var game_state: GameState = null
 var song_timer: SongTimer = null
 
-var _scene_debug_ref = null
 var _spotlight_ref: Node3D = null
+
+var _ui_scene_debug_ref: Control = null
 var _ui_player_to_meter: Dictionary
 var _last_beat: int = -1
 
@@ -18,8 +19,8 @@ func _ready() -> void:
 
 	var song_metadata = SongMetadata.new("res://songs/My_Castle_Town.json")
 
-	self._scene_debug_ref = get_node("ui/SceneDebug")
-	self._scene_debug_ref.set_visible(false)
+	self._ui_scene_debug_ref = get_node("ui/SceneDebug")
+	self._ui_scene_debug_ref.set_visible(false)
 
 	self._ui_player_to_meter = Dictionary()
 	self._ui_player_to_meter[GameLogic.Player.PLAYER_1] = get_node("ui/hud/TopMargin/TopHbox/Player1Meter")
@@ -103,7 +104,7 @@ func update_player_meter(player: GameLogic.Player, meter: int):
 
 func _input(event):
 	if event.is_action_pressed("ui_text_delete"):
-		self._scene_debug_ref.set_visible(!self._scene_debug_ref.visible)
+		self._ui_scene_debug_ref.set_visible(!self._ui_scene_debug_ref.visible)
 
 		# in browser get stuff like this:
 		# rate 48000 last 0.010101 next -0.00743433333333 latency 0.09266667068005
@@ -123,7 +124,7 @@ func _input(event):
 func _physics_process(delta: float) -> void:
 	self.game_state.physics_process(delta)
 
-	if self._scene_debug_ref.visible:
+	if self._ui_scene_debug_ref.visible:
 		if self._last_beat != self.song_timer.beat:
 			self._last_beat = self.song_timer.beat
 
