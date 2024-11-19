@@ -17,12 +17,12 @@ func _ready() -> void:
 
 	var song_metadata = SongMetadata.new("res://songs/My_Castle_Town.json")
 
-	self._scene_debug_ref = get_node("SceneDebug")
+	self._scene_debug_ref = get_node("ui/SceneDebug")
 	self._scene_debug_ref.set_visible(false)
 
 	self._ui_player_to_meter = Dictionary()
-	self._ui_player_to_meter[GameLogic.Player.PLAYER_1] = get_node("hud/TopMargin/TopHbox/Player1Meter")
-	self._ui_player_to_meter[GameLogic.Player.PLAYER_2] = get_node("hud/TopMargin/TopHbox/Player2Meter")
+	self._ui_player_to_meter[GameLogic.Player.PLAYER_1] = get_node("ui/hud/TopMargin/TopHbox/Player1Meter")
+	self._ui_player_to_meter[GameLogic.Player.PLAYER_2] = get_node("ui/hud/TopMargin/TopHbox/Player2Meter")
 
 	# TODO: figure out how to dynamically make and attach scripts/properties
 	var p1 = get_node("player1")
@@ -123,8 +123,8 @@ func _physics_process(delta: float) -> void:
 		if self._last_beat != self.song_timer.beat:
 			self._last_beat = self.song_timer.beat
 
-			var beat_value = get_node("SceneDebug/ColorRect/BeatCounter/BeatCounterValue")
-			var beat_total = get_node("SceneDebug/ColorRect/BeatCounter/BeatCounterTotal")
+			var beat_value = get_node("ui/SceneDebug/ColorRect/BeatCounter/BeatCounterValue")
+			var beat_total = get_node("ui/SceneDebug/ColorRect/BeatCounter/BeatCounterTotal")
 			beat_value.set_value_no_signal(
 				float(
 					self._last_beat % self.song_timer.beats_per_measure
