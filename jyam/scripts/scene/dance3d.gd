@@ -5,6 +5,7 @@ var game_state: GameState = null
 var song_timer: SongTimer = null
 
 var _scene_debug_ref = null
+var _spotlight_ref: Node3D = null
 var _ui_player_to_meter: Dictionary
 var _last_beat: int = -1
 
@@ -23,6 +24,9 @@ func _ready() -> void:
 	self._ui_player_to_meter = Dictionary()
 	self._ui_player_to_meter[GameLogic.Player.PLAYER_1] = get_node("ui/hud/TopMargin/TopHbox/Player1Meter")
 	self._ui_player_to_meter[GameLogic.Player.PLAYER_2] = get_node("ui/hud/TopMargin/TopHbox/Player2Meter")
+
+	self._spotlight_ref = get_node("spotlight")
+	self._spotlight_ref.visible = false
 
 	# TODO: figure out how to dynamically make and attach scripts/properties
 	var p1 = get_node("player1")
