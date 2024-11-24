@@ -1,4 +1,5 @@
 // https://godotshaders.com/shader/flexible-toon-shader-godot-4/
+// MIT License
 shader_type spatial;
 
 //render_mode ambient_light_disabled;
@@ -29,16 +30,8 @@ uniform sampler2D ramp : source_color;
 uniform bool use_borders = false;
 uniform float border_width = 0.01f;
 
-varying vec3 vertex_pos;
-varying vec3 normal;
-
 float split_specular(float specular) {
 	return step(0.5f, specular);
-}
-
-void vertex() {
-	vertex_pos = VERTEX;
-	normal = NORMAL;
 }
 
 void fragment() {
