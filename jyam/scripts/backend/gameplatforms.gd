@@ -85,6 +85,7 @@ func set_dancer(dancer: GameDancer, dst: Vector2):
 	var dst_plat = self.get_platform(dst)
 	assert(dst_plat != null)
 	dst_plat.dancers[dancer.key] = dancer
+	dancer.platform_pos = dst_plat.pos
 
 # @returns dst_platform: the destination platform, null if invalid move
 func attempt_begin_move(dancer: GameDancer, move_dir: Vector2) -> Platform:
