@@ -14,14 +14,14 @@ var _rows: int
 var _cols: int
 
 const ACTION_TO_MOVE_DIR = {
-	GameInputs.Action.P1_UP: Vector2(1, 0),
-	GameInputs.Action.P1_DOWN: Vector2(-1, 0),
-	GameInputs.Action.P1_LEFT: Vector2(0, -1),
-	GameInputs.Action.P1_RIGHT: Vector2(0, 1),
-	GameInputs.Action.P2_UP: Vector2(1, 0),
-	GameInputs.Action.P2_DOWN: Vector2(-1, 0),
-	GameInputs.Action.P2_LEFT: Vector2(0, -1),
-	GameInputs.Action.P2_RIGHT: Vector2(0, 1),
+	GameInputs.Action.P1_UP: GameLogic.UP,
+	GameInputs.Action.P1_DOWN: GameLogic.DOWN,
+	GameInputs.Action.P1_LEFT: GameLogic.LEFT,
+	GameInputs.Action.P1_RIGHT: GameLogic.RIGHT,
+	GameInputs.Action.P2_UP: GameLogic.UP,
+	GameInputs.Action.P2_DOWN: GameLogic.DOWN,
+	GameInputs.Action.P2_LEFT: GameLogic.LEFT,
+	GameInputs.Action.P2_RIGHT: GameLogic.RIGHT,
 }
 
 var rows: int:
