@@ -44,6 +44,45 @@ func _other_player(player: GameLogic.Player) -> GameLogic.Player:
 func _enter_closed_position(lead: GameDancer, follow: GameDancer):
 	print_debug("enter: lead {0} follow {1}".format([lead, follow]))
 
+	# TODO: breaking some abstractions here, figure out something better
+	var lead_rtl = lead.dancer3d.get_facecam_text_label()
+	var follow_rtl = follow.dancer3d.get_facecam_text_label()
+
+	var _eventify = func(funcs) -> Callable:
+		var _f = func(_context):
+			for f in funcs:
+				f.call()
+		return _f
+
+	var interval = self._song_timer_ref.sec_per_measure / 4
+	var events = [
+		[0.0, _eventify.call(
+				[
+					func(): lead.dancer3d.show_facecam(),
+					func(): lead_rtl.append_text("please"),
+				],
+			)
+		],
+		[interval, _eventify.call([func(): lead_rtl.append_text(" please")])],
+		[interval * 2, _eventify.call([func(): lead_rtl.append_text(" [b]please![/b]")])],
+		[interval * 3, _eventify.call([
+			func(): follow.dancer3d.show_facecam(),
+			func(): follow_rtl.append_text("...ok"),
+		])],
+		[interval * 8, _eventify.call([
+			func(): lead.dancer3d.hide_facecam(),
+			func(): follow.dancer3d.hide_facecam(),
+		])],
+		# TODO: transition dancers to closed position
+	]
+	for i in events:
+		var ev = SongTimer.Event.new(
+			self._song_timer_ref,
+			i[0],
+			i[1],
+		)
+		self._song_timer_ref.insert_event(ev)
+
 func _move_player(player: GameLogic.Player, move_dir: Vector2):
 	var dancer = self._player_to_dancer[player]
 	assert(dancer != null)

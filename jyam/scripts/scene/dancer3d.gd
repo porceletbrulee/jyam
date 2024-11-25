@@ -25,6 +25,7 @@ var partner_ref = null
 var facing: GameLogic.Facing = GameLogic.Facing.PARTNER
 
 var _anim: AnimationPlayer = null
+var _facecamui_ref: Control = null
 
 class MoveState extends RefCounted:
 	var src: Vector3
@@ -42,10 +43,12 @@ var _move_state: MoveState
 
 var _action_toggle_facing = ""
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	self._anim = get_node("AnimationPlayer")
+	self._facecamui_ref = get_node("facecamui")
+	self._facecamui_ref.visible = false
 
+# Called by dance3d after the entire scene is ready
 func scene_ready(
 	song_metadata: SongMetadata,
 	initial_plat: GamePlatforms.Platform,
@@ -154,3 +157,15 @@ func finish_move():
 	var dst_point = self._move_state.dst
 	self._move_state = null
 	self.transform.origin = dst_point
+
+func get_facecam_text_label() -> RichTextLabel:
+	# TODO: make a facecam class probably to take care of this
+	return get_node("facecamui/vbox/text")
+
+func show_facecam():
+	var rtl = self.get_facecam_text_label()
+	rtl.text = ""
+	self._facecamui_ref.visible = true
+
+func hide_facecam():
+	self._facecamui_ref.visible = false
