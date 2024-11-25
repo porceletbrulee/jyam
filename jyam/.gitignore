@@ -1,3 +1,5 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+# godot keeps making files like sce52CD.tmp and not deleting them
+sce*.tmp
