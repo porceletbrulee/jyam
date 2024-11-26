@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://ch3k52glg52di"]
+
+[node name="SceneDebug" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 7.0
+offset_right = 343.0
+offset_bottom = 289.0
+color = Color(0.999778, 0.457701, 0.900281, 1)
+
+[node name="BeatCounter" type="BoxContainer" parent="ColorRect"]
+layout_direction = 2
+layout_mode = 0
+offset_left = 20.0
+offset_top = 41.0
+offset_right = 274.0
+offset_bottom = 72.0
+
+[node name="BeatCounterLabel" type="Label" parent="ColorRect/BeatCounter"]
+layout_mode = 2
+text = "Beat Counter"
+
+[node name="expand" type="Control" parent="ColorRect/BeatCounter"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BeatCounterValue" type="SpinBox" parent="ColorRect/BeatCounter"]
+layout_mode = 2
+min_value = -100.0
+editable = false
+
+[node name="BeatCounterTotal" type="SpinBox" parent="ColorRect/BeatCounter"]
+layout_mode = 2
+min_value = -100.0
+editable = false

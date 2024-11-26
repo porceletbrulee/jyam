@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dgv0ljluuaq1x"]
+
+[ext_resource type="Shader" path="res://shaders/starfield.gdshader" id="1_ovhyj"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_ovhyj")
+shader_parameter/anim_speed = 2.375e-07
+shader_parameter/star_brightness = 0.088
+shader_parameter/dust = 0.027
+shader_parameter/dist_fade = 0.724
+shader_parameter/pixelation = 1000.0
+shader_parameter/quantization_levels = 256
+shader_parameter/dust_color = Color(0.0388429, 0.00157494, 0.00418497, 1)
+shader_parameter/saturation = 0.868
+shader_parameter/layers = 5.0
+shader_parameter/iterations = 8

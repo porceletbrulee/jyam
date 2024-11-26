@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=3 uid="uid://b4v6d6k2n6o3j"]
+
+[ext_resource type="Script" path="res://ui/facecam.gd" id="1_41qx6"]
+
+[node name="invite" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="border" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 128.0
+color = Color(0.219608, 0.219608, 0.219608, 0.870588)
+
+[node name="margin" type="MarginContainer" parent="border"]
+layout_mode = 0
+offset_right = 532.0
+offset_bottom = 532.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="subviewportc" type="SubViewportContainer" parent="border/margin"]
+layout_mode = 2
+stretch = true
+
+[node name="subviewport" type="SubViewport" parent="border/margin/subviewportc"]
+own_world_3d = true
+handle_input_locally = false
+size = Vector2i(2, 2)
+render_target_update_mode = 4
+
+[node name="facecam" type="Camera3D" parent="border/margin/subviewportc/subviewport"]
+transform = Transform3D(1, 0, 0, 0, 0.982375, 0.186918, 0, -0.186918, 0.982375, 0, 6.42453, 7.71146)
+projection = 2
+near = 1.0
+far = 15.0
+script = ExtResource("1_41qx6")

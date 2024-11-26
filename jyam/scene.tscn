@@ -1,0 +1,441 @@
+[gd_scene load_steps=20 format=3 uid="uid://de4uuseyx7ow2"]
+
+[ext_resource type="Script" path="res://scripts/scene/dance3d.gd" id="1_tnr3l"]
+[ext_resource type="Script" path="res://scripts/scene/dancer3d.gd" id="4_iy7ff"]
+[ext_resource type="PackedScene" uid="uid://uv5h80mm84ui" path="res://models/puppymaid3.blend" id="4_xnlko"]
+[ext_resource type="Material" uid="uid://cuibyl7rdbydt" path="res://materials/puppymaid_apron.tres" id="5_jy7p1"]
+[ext_resource type="PackedScene" uid="uid://dmje4cdeul7h6" path="res://ui/hud.tscn" id="6_ej6wt"]
+[ext_resource type="PackedScene" uid="uid://ch3k52glg52di" path="res://ui/scene_debug.tscn" id="6_mirw1"]
+[ext_resource type="Material" uid="uid://dq5aejuyar440" path="res://materials/puppymaid_dress.tres" id="6_mmug8"]
+[ext_resource type="Material" uid="uid://oj1n81iaa53v" path="res://materials/puppymaid_head.tres" id="9_5cxf2"]
+[ext_resource type="Script" path="res://ui/facecam.gd" id="9_g1m4l"]
+[ext_resource type="PackedScene" uid="uid://bxgjiuj133no4" path="res://models/cone.blend" id="9_o20bb"]
+[ext_resource type="Material" uid="uid://bobpgmp87ofgi" path="res://materials/puppymaid_spotlight.tres" id="10_7n5k6"]
+[ext_resource type="PackedScene" uid="uid://dnt5elcenc77k" path="res://models/dancestage.glb" id="12_dnr35"]
+[ext_resource type="Material" uid="uid://dgv0ljluuaq1x" path="res://materials/starfield.tres" id="13_ej4fu"]
+[ext_resource type="PackedScene" uid="uid://m13ywxgteamj" path="res://models/puppymaid.blend" id="14_atp33"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_mfuqr"]
+material = ExtResource("5_jy7p1")
+size = Vector3(1, 10, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6h77u"]
+size = Vector3(12.6136, 1, 11.5732)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a7pqf"]
+albedo_color = Color(1, 0.248448, 0.28517, 1)
+metallic = 0.17
+roughness = 0.17
+
+[sub_resource type="BoxMesh" id="BoxMesh_quvgg"]
+material = SubResource("StandardMaterial3D_a7pqf")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_sc21h"]
+lightmap_size_hint = Vector2i(102, 102)
+material = ExtResource("13_ej4fu")
+size = Vector2(200, 150)
+subdivide_width = 32
+subdivide_depth = 32
+
+[node name="root" type="Node3D"]
+
+[node name="dance3d" type="Node3D" parent="."]
+script = ExtResource("1_tnr3l")
+
+[node name="player1" type="Node3D" parent="dance3d"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.5788, 0)
+script = ExtResource("4_iy7ff")
+
+[node name="model" parent="dance3d/player1" instance=ExtResource("14_atp33")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5.28939, 0)
+
+[node name="body" parent="dance3d/player1/model/Armature/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("5_jy7p1")
+surface_material_override/1 = ExtResource("6_mmug8")
+surface_material_override/2 = ExtResource("5_jy7p1")
+surface_material_override/3 = ExtResource("5_jy7p1")
+surface_material_override/4 = ExtResource("6_mmug8")
+surface_material_override/5 = ExtResource("9_5cxf2")
+surface_material_override/6 = ExtResource("6_mmug8")
+surface_material_override/7 = ExtResource("6_mmug8")
+
+[node name="facecamui" type="Control" parent="dance3d/player1"]
+z_index = 3
+z_as_relative = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = 150.0
+offset_top = 186.0
+offset_right = 454.0
+offset_bottom = 445.0
+
+[node name="vbox" type="VBoxContainer" parent="dance3d/player1/facecamui"]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 0
+offset_right = 273.0
+offset_bottom = 240.0
+
+[node name="margin" type="MarginContainer" parent="dance3d/player1/facecamui/vbox"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="facecam" type="SubViewportContainer" parent="dance3d/player1/facecamui/vbox/margin"]
+custom_minimum_size = Vector2(96, 128)
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 4.0
+stretch = true
+
+[node name="viewport" type="SubViewport" parent="dance3d/player1/facecamui/vbox/margin/facecam"]
+handle_input_locally = false
+size = Vector2i(253, 128)
+render_target_update_mode = 4
+
+[node name="facecam" type="Camera3D" parent="dance3d/player1/facecamui/vbox/margin/facecam/viewport" node_paths=PackedStringArray("follow_target")]
+transform = Transform3D(1, 0, 0, 0, 0.982376, 0.186918, 0, -0.186918, 0.982376, 0, 11.5655, 7.71146)
+projection = 2
+near = 1.0
+far = 15.0
+script = ExtResource("9_g1m4l")
+follow_target = NodePath("../../../../../../facecam_loc")
+
+[node name="text" type="RichTextLabel" parent="dance3d/player1/facecamui/vbox"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+text = "placeholder text
+line 2
+line 3
+line 4"
+scroll_active = false
+
+[node name="facecam_loc" type="Camera3D" parent="dance3d/player1"]
+transform = Transform3D(1, 0, 0, 0, 0.982376, 0.186918, 0, -0.186918, 0.982376, 0, 0.772844, 7.71146)
+projection = 2
+near = 1.0
+far = 15.0
+
+[node name="player2" type="Node3D" parent="dance3d"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.2863, 0, 0)
+script = ExtResource("4_iy7ff")
+
+[node name="model" type="MeshInstance3D" parent="dance3d/player2"]
+mesh = SubResource("BoxMesh_mfuqr")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="dance3d/player2/model"]
+
+[node name="facecamui" type="Control" parent="dance3d/player2"]
+z_index = 3
+z_as_relative = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = 700.0
+offset_top = 186.0
+offset_right = 1004.0
+offset_bottom = 445.0
+
+[node name="vbox" type="VBoxContainer" parent="dance3d/player2/facecamui"]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 0
+offset_right = 273.0
+offset_bottom = 240.0
+
+[node name="margin" type="MarginContainer" parent="dance3d/player2/facecamui/vbox"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="facecam" type="SubViewportContainer" parent="dance3d/player2/facecamui/vbox/margin"]
+custom_minimum_size = Vector2(96, 128)
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 4.0
+stretch = true
+
+[node name="viewport" type="SubViewport" parent="dance3d/player2/facecamui/vbox/margin/facecam"]
+handle_input_locally = false
+size = Vector2i(253, 128)
+render_target_update_mode = 4
+
+[node name="facecam" type="Camera3D" parent="dance3d/player2/facecamui/vbox/margin/facecam/viewport" node_paths=PackedStringArray("follow_target")]
+transform = Transform3D(1, 0, 0, 0, 0.982376, 0.186918, 0, -0.186918, 0.982376, 14.2161, 6.457, 7.711)
+projection = 2
+near = 1.0
+far = 15.0
+script = ExtResource("9_g1m4l")
+follow_target = NodePath("../../../../../../facecam_loc")
+
+[node name="text" type="RichTextLabel" parent="dance3d/player2/facecamui/vbox"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+text = "placeholder text
+line 2
+line 3
+line 4"
+scroll_active = false
+
+[node name="facecam_loc" type="Camera3D" parent="dance3d/player2"]
+transform = Transform3D(1, 0, 0, 0, 0.982376, 0.186918, 0, -0.186918, 0.982376, 0, 6.45737, 7.71146)
+projection = 2
+near = 1.0
+far = 15.0
+
+[node name="spotlight" parent="dance3d" instance=ExtResource("9_o20bb")]
+transform = Transform3D(3.8, 0, 0, 0, 8.40411, 0, 0, 0, 3.8, -4.47304, 8.57691, 0)
+
+[node name="Cone" parent="dance3d/spotlight" index="0"]
+surface_material_override/0 = ExtResource("10_7n5k6")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="dance3d"]
+
+[node name="platforms" type="Node3D" parent="dance3d"]
+visible = false
+
+[node name="platform0" type="StaticBody3D" parent="dance3d/platforms"]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, -9.3016, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="dance3d/platforms/platform0"]
+shape = SubResource("BoxShape3D_6h77u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="dance3d/platforms/platform0"]
+transform = Transform3D(12.4319, 0, 0, 0, 1.0475, 0, 0, 0, 11.1759, 0, 0, 0)
+mesh = SubResource("BoxMesh_quvgg")
+
+[node name="platform1" type="StaticBody3D" parent="dance3d/platforms"]
+transform = Transform3D(0.7494, 0, 0, 0, 0.7494, 0, 0, 0, 0.7494, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="dance3d/platforms/platform1"]
+shape = SubResource("BoxShape3D_6h77u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="dance3d/platforms/platform1"]
+transform = Transform3D(12.4319, 0, 0, 0, 1.0475, 0, 0, 0, 11.1759, 0, 0, 0)
+mesh = SubResource("BoxMesh_quvgg")
+
+[node name="platform2" type="StaticBody3D" parent="dance3d/platforms"]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 9.257, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="dance3d/platforms/platform2"]
+shape = SubResource("BoxShape3D_6h77u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="dance3d/platforms/platform2"]
+transform = Transform3D(12.4319, 0, 0, 0, 1.0475, 0, 0, 0, 11.1759, 0, 0, 0)
+mesh = SubResource("BoxMesh_quvgg")
+
+[node name="platform3" type="StaticBody3D" parent="dance3d/platforms"]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, -9.3012, 0, -8.26281)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="dance3d/platforms/platform3"]
+shape = SubResource("BoxShape3D_6h77u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="dance3d/platforms/platform3"]
+transform = Transform3D(12.4319, 0, 0, 0, 1.0475, 0, 0, 0, 11.1759, 0, 0, 0)
+mesh = SubResource("BoxMesh_quvgg")
+
+[node name="platform4" type="StaticBody3D" parent="dance3d/platforms"]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, -8.26181)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="dance3d/platforms/platform4"]
+shape = SubResource("BoxShape3D_6h77u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="dance3d/platforms/platform4"]
+transform = Transform3D(12.4319, 0, 0, 0, 1.0475, 0, 0, 0, 11.1759, 0, 0, 0)
+mesh = SubResource("BoxMesh_quvgg")
+
+[node name="platform5" type="StaticBody3D" parent="dance3d/platforms"]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 9.25718, -1.90735e-06, -8.35859)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="dance3d/platforms/platform5"]
+shape = SubResource("BoxShape3D_6h77u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="dance3d/platforms/platform5"]
+transform = Transform3D(12.4319, 0, 0, 0, 1.0475, 0, 0, 0, 11.1759, 0, 0, 0)
+mesh = SubResource("BoxMesh_quvgg")
+
+[node name="platform6" type="StaticBody3D" parent="dance3d/platforms"]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, -9.3012, 0, -16.256)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="dance3d/platforms/platform6"]
+shape = SubResource("BoxShape3D_6h77u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="dance3d/platforms/platform6"]
+transform = Transform3D(12.4319, 0, 0, 0, 1.0475, 0, 0, 0, 11.1759, 0, 0, 0)
+mesh = SubResource("BoxMesh_quvgg")
+
+[node name="platform7" type="StaticBody3D" parent="dance3d/platforms"]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, -16.249)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="dance3d/platforms/platform7"]
+shape = SubResource("BoxShape3D_6h77u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="dance3d/platforms/platform7"]
+transform = Transform3D(12.4319, 0, 0, 0, 1.0475, 0, 0, 0, 11.1759, 0, 0, 0)
+mesh = SubResource("BoxMesh_quvgg")
+
+[node name="platform8" type="StaticBody3D" parent="dance3d/platforms"]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 9.25718, -1.90735e-06, -16.3458)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="dance3d/platforms/platform8"]
+shape = SubResource("BoxShape3D_6h77u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="dance3d/platforms/platform8"]
+transform = Transform3D(12.4319, 0, 0, 0, 1.0475, 0, 0, 0, 11.1759, 0, 0, 0)
+mesh = SubResource("BoxMesh_quvgg")
+
+[node name="frontcam" type="Camera3D" parent="dance3d"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.7676, 27.1204)
+current = true
+fov = 78.2
+size = 23.469
+near = 7.749
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="dance3d"]
+transform = Transform3D(1, 0, 0, 0, 0.999997, -0.00263541, 0, 0.00263541, 0.999997, 0, 3.84603, 14.3452)
+
+[node name="old_player1" parent="dance3d" instance=ExtResource("4_xnlko")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.28939, 0)
+visible = false
+
+[node name="Skeleton3D" parent="dance3d/old_player1/Armature" index="0"]
+bones/1/rotation = Quaternion(-2.66925e-08, -2.66925e-08, -0.707107, 0.707107)
+bones/2/position = Vector3(0.354278, 0.367692, -2.45062e-08)
+bones/2/rotation = Quaternion(0.011644, -0.011644, -0.707011, 0.707011)
+bones/3/rotation = Quaternion(-0.0305065, -1.22007e-07, 8.15591e-09, 0.999535)
+bones/4/rotation = Quaternion(0.293032, 1.82108e-15, -1.14111e-07, 0.956103)
+bones/5/rotation = Quaternion(0.481229, -3.83171e-08, -2.08433e-07, 0.876595)
+bones/6/rotation = Quaternion(-2.66925e-08, 2.66925e-08, 0.707107, 0.707107)
+bones/7/position = Vector3(-0.354278, 0.367692, -2.45062e-08)
+bones/7/rotation = Quaternion(0.011644, 0.011644, 0.707011, 0.707011)
+bones/8/rotation = Quaternion(-0.0305065, 1.22007e-07, -8.15591e-09, 0.999535)
+bones/9/rotation = Quaternion(0.293032, -1.64563e-14, 1.14111e-07, 0.956103)
+bones/11/position = Vector3(-3.38034, -3.22543, -0.686645)
+bones/11/rotation = Quaternion(0.707107, 3.9056e-07, 3.9056e-07, 0.707107)
+bones/12/position = Vector3(3.38034, -3.22543, -0.686645)
+bones/12/rotation = Quaternion(0.707107, -3.9056e-07, -3.9056e-07, 0.707107)
+bones/16/rotation = Quaternion(0.937984, -1.66392e-08, -0.0499972, 0.343053)
+bones/18/rotation = Quaternion(0.937984, 1.66392e-08, 0.0499972, 0.343053)
+bones/19/rotation = Quaternion(-0.0526233, 0.0526232, -0.705146, 0.705146)
+bones/20/rotation = Quaternion(0.153222, 6.87241e-09, -1.26335e-08, 0.988192)
+bones/21/rotation = Quaternion(-0.0792556, 4.15164e-15, 5.98362e-09, 0.996854)
+bones/22/rotation = Quaternion(-8.6447e-15, -1.18827e-15, -3.46515e-16, 1)
+bones/23/rotation = Quaternion(-0.0526232, -0.0526232, 0.705146, 0.705146)
+bones/24/rotation = Quaternion(0.153222, -6.87241e-09, 1.26335e-08, 0.988192)
+bones/25/rotation = Quaternion(-0.0792556, -1.1239e-14, -5.98363e-09, 0.996854)
+bones/26/rotation = Quaternion(-9.23788e-15, 3.00019e-16, 1.00519e-15, 1)
+bones/27/position = Vector3(4.94842, 2.88922, 1.13687e-13)
+bones/27/rotation = Quaternion(-2.98023e-08, -1.19209e-07, -1.05879e-22, 1)
+bones/28/rotation = Quaternion(-1.37679e-07, 0.707107, -0.707107, 1.37679e-07)
+bones/30/rotation = Quaternion(1.37679e-07, 0.707107, -0.707107, -1.37679e-07)
+bones/31/rotation = Quaternion(-8.42937e-08, 0.707107, 0.707107, -8.42937e-08)
+bones/35/position = Vector3(0, -3.24402, -3.08777)
+bones/36/position = Vector3(3.614, 2.88922, -1.42599)
+bones/37/position = Vector3(-3.614, 2.88922, -1.42599)
+
+[node name="body" parent="dance3d/old_player1/Armature/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("5_jy7p1")
+surface_material_override/1 = ExtResource("6_mmug8")
+surface_material_override/2 = ExtResource("5_jy7p1")
+surface_material_override/3 = ExtResource("5_jy7p1")
+surface_material_override/4 = ExtResource("6_mmug8")
+surface_material_override/5 = ExtResource("9_5cxf2")
+surface_material_override/6 = ExtResource("6_mmug8")
+surface_material_override/7 = ExtResource("6_mmug8")
+
+[node name="facecamui" type="Control" parent="dance3d/old_player1"]
+visible = false
+z_index = 3
+z_as_relative = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = 155.0
+offset_top = 186.0
+offset_right = 459.0
+offset_bottom = 445.0
+
+[node name="vbox" type="VBoxContainer" parent="dance3d/old_player1/facecamui"]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 0
+offset_right = 273.0
+offset_bottom = 240.0
+
+[node name="margin" type="MarginContainer" parent="dance3d/old_player1/facecamui/vbox"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="facecam" type="SubViewportContainer" parent="dance3d/old_player1/facecamui/vbox/margin"]
+custom_minimum_size = Vector2(96, 128)
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 4.0
+stretch = true
+
+[node name="viewport" type="SubViewport" parent="dance3d/old_player1/facecamui/vbox/margin/facecam"]
+handle_input_locally = false
+size = Vector2i(96, 128)
+render_target_update_mode = 0
+
+[node name="facecam" type="Camera3D" parent="dance3d/old_player1/facecamui/vbox/margin/facecam/viewport" node_paths=PackedStringArray("follow_target")]
+transform = Transform3D(1, 0, 0, 0, 0.982376, 0.186918, 0, -0.186918, 0.982376, 0, 11.5655, 7.71146)
+projection = 2
+near = 1.0
+far = 15.0
+script = ExtResource("9_g1m4l")
+follow_target = NodePath("../../../../../../facecam_loc")
+
+[node name="text" type="RichTextLabel" parent="dance3d/old_player1/facecamui/vbox"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+text = "placeholder text
+line 2
+line 3
+line 4"
+scroll_active = false
+
+[node name="facecam_loc" type="Camera3D" parent="dance3d/old_player1"]
+transform = Transform3D(1, 0, 0, 0, 0.982376, 0.186918, 0, -0.186918, 0.982376, 0, 6.45737, 7.71146)
+projection = 2
+near = 1.0
+far = 15.0
+
+[node name="ui" type="Node" parent="dance3d"]
+
+[node name="hud" parent="dance3d/ui" instance=ExtResource("6_ej6wt")]
+
+[node name="SceneDebug" parent="dance3d/ui" instance=ExtResource("6_mirw1")]
+
+[node name="dancestage" parent="dance3d" instance=ExtResource("12_dnr35")]
+transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 6, -3.05861, -5.35645, -3.13475)
+
+[node name="ceilinglights" type="Node" parent="dance3d"]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="dance3d/ceilinglights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 15, 0)
+light_energy = 6.0
+omni_range = 24.675
+omni_attenuation = 0.0
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="dance3d/ceilinglights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 15, 0)
+light_energy = 6.0
+omni_range = 24.675
+omni_attenuation = 0.0
+
+[node name="OmniLight3D3" type="OmniLight3D" parent="dance3d/ceilinglights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 0)
+light_energy = 6.0
+omni_range = 24.675
+omni_attenuation = 0.0
+
+[node name="background" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 1.90735e-06, -54.2928)
+mesh = SubResource("PlaneMesh_sc21h")
+
+[editable path="dance3d/player1/model"]
+[editable path="dance3d/spotlight"]
+[editable path="dance3d/old_player1"]
