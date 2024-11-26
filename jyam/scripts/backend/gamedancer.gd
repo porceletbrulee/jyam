@@ -153,6 +153,40 @@ func finish_move(song_timer: SongTimer):
 	var new_state = self._transition_idle_state()
 	self.trigger_stationary_transition(song_timer, new_state)
 
+func trigger_move_to_closed_position(
+	dst_plat: GamePlatforms.Platform,
+	move_dir: Vector2,
+	move_duration_sec: float,
+):
+	# if moving down, the dancer should be on the "up" side of the platform,
+	# which is negative z
+	var offset_dir = Vector3(0, 0, 0)
+	match move_dir:
+		GameLogic.UP:
+			offset_dir = Vector3(0, 0, 1)
+		GameLogic.DOWN:
+			offset_dir = Vector3(0, 0, -1)
+		GameLogic.LEFT:
+			offset_dir = Vector3(1, 0, 0)
+		GameLogic.RIGHT:
+			offset_dir = Vector3(-1, 0, 0)
+	self.dancer3d.trigger_move_to_closed_position(
+		dst_plat, offset_dir, move_duration_sec
+	)
+
+func finish_move_to_closed_position(song_timer: SongTimer):
+	self.dancer3d.finish_move()
+
+	var new_state: GameDancer.State = GameDancer.State.SOLO_IDLE
+	match self._state:
+		GameDancer.State.ENTERING_CLOSED_POSITION_LEAD:
+			new_state = GameDancer.State.CLOSED_BUFFER_INPUTS_LEAD
+		GameDancer.State.ENTERING_CLOSED_POSITION_FOLLOW:
+			new_state = GameDancer.State.CLOSED_MATCH_INPUTS_FOLLOW
+		_:
+			assert(false, "oops {0}".format([self._state]))
+	self.trigger_stationary_transition(song_timer, new_state)
+
 func _new_cancellable_seq() -> int:
 	var seq = self._event_seq
 	self._cancelled_seqs[seq] = false

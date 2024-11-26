@@ -1,6 +1,7 @@
 class_name Dancer3D extends Node3D
 
 @export var player: GameLogic.Player = GameLogic.Player.PLAYER_1
+@export var CLOSED_POSITION_OFFSET_DISTANCE: float = 2.0
 
 enum ScaleType {
 	NONE = 0,
@@ -130,13 +131,18 @@ func trigger_animation(duration_sec: float, state: GameDancer.State):
 		var animation = info[0]
 		self._maybe_play_animation(animation, duration_sec)
 
-func trigger_move(
-	_src_plat: GamePlatforms.Platform,
+# dancers need to be off-center for closed position
+# TODO: maybe it's better to have the animations handle this?
+# @param offset_dir: GameLogic.UP, .DOWN, .LEFT, .RIGHT. It's applied to the
+#                    x-z space.
+func _trigger_move_with_offset(
 	dst_plat: GamePlatforms.Platform,
+	offset_from_center: Vector3,
 	move_duration_sec: float,
-	state: GameDancer.State):
+	state_for_move_animation: GameDancer.State,
+):
 	assert(self._move_state == null)
-	var dst_point = dst_plat.transform_origin()
+	var dst_point = dst_plat.transform_origin() + offset_from_center
 	# FIXME: calculation of height (y-axis) needs some work
 	dst_point.y = self.transform.origin.y
 
@@ -146,10 +152,35 @@ func trigger_move(
 		move_duration_sec,
 	)
 
-	var info = self.STATE_TO_ANIMATION_INFO.get(state)
+	var info = self.STATE_TO_ANIMATION_INFO.get(state_for_move_animation)
 	if info != null:
 		var animation = info[0]
 		self._maybe_play_animation(animation, move_duration_sec)
+
+func trigger_move_to_closed_position(
+	dst_plat: GamePlatforms.Platform,
+	offset_dir: Vector3,
+	move_duration_sec: float,
+):
+	var offset_from_center = offset_dir * self.CLOSED_POSITION_OFFSET_DISTANCE
+	self._trigger_move_with_offset(
+		dst_plat,
+		offset_from_center,
+		move_duration_sec,
+		GameDancer.State.SOLO_MOVING,
+	)
+
+func trigger_move(
+	_src_plat: GamePlatforms.Platform,
+	dst_plat: GamePlatforms.Platform,
+	move_duration_sec: float,
+	state_for_move_animation: GameDancer.State):
+	self._trigger_move_with_offset(
+		dst_plat,
+		Vector3(0, 0, 0),
+		move_duration_sec,
+		state_for_move_animation,
+	)
 
 func finish_move():
 	# finish moving the model even if the interpolation is not done

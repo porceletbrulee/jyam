@@ -41,8 +41,8 @@ func _other_player(player: GameLogic.Player) -> GameLogic.Player:
 	else:
 		return GameLogic.Player.PLAYER_1
 
-func _enter_closed_position(lead: GameDancer, follow: GameDancer):
-	print_debug("enter: lead {0} follow {1}".format([lead, follow]))
+func _enter_closed_position(lead: GameDancer, follow: GameDancer, move_dir: Vector2):
+	print_debug("enter: lead {0} follow {1} {2}".format([lead, follow, move_dir]))
 
 	# TODO: breaking some abstractions here, figure out something better
 	var lead_rtl = lead.dancer3d.get_facecam_text_label()
@@ -54,7 +54,28 @@ func _enter_closed_position(lead: GameDancer, follow: GameDancer):
 				f.call()
 		return _f
 
-	var interval = self._song_timer_ref.sec_per_measure / 4
+	var _move_dancers = func(_context):
+		var plat = self._platforms_ref.get_platform(lead.platform_pos)
+		assert(plat != null)
+
+		var move_duration_sec = self._song_timer_ref.sec_per_beat
+		lead.trigger_move_to_closed_position(plat, GameLogic.opposite_dir(move_dir), move_duration_sec)
+		follow.trigger_move_to_closed_position(plat, move_dir, move_duration_sec)
+
+		var finish_move = func(_context2):
+			self._platforms_ref.finish_move(lead, plat)
+			self._platforms_ref.finish_move(follow, plat)
+			lead.finish_move_to_closed_position(self._song_timer_ref)
+			follow.finish_move_to_closed_position(self._song_timer_ref)
+
+		var ev = SongTimer.Event.new(
+			self._song_timer_ref,
+			move_duration_sec,
+			finish_move,
+		)
+		self._song_timer_ref.insert_event(ev)
+
+	var interval = self._song_timer_ref.sec_per_beat
 	var events = [
 		[0.0, _eventify.call(
 				[
@@ -69,6 +90,7 @@ func _enter_closed_position(lead: GameDancer, follow: GameDancer):
 			func(): follow.dancer3d.show_facecam(),
 			func(): follow_rtl.append_text("...ok"),
 		])],
+		[interval * 5, _move_dancers],
 		[interval * 8, _eventify.call([
 			func(): lead.dancer3d.hide_facecam(),
 			func(): follow.dancer3d.hide_facecam(),
@@ -97,12 +119,16 @@ func _move_player(player: GameLogic.Player, move_dir: Vector2):
 
 	if dst_plat.dancers.size() > 0:
 		# there should only be one other dancer
-		var partner = dst_plat.dancers.values()[0]
-		if not partner.invite_accepted(self._song_timer_ref, dancer):
-			return false
+		var partner: GameDancer = dst_plat.dancers.values()[0]
 
-		self._enter_closed_position(partner, dancer)
-		return true
+		if partner.is_inviting():
+			if not partner.invite_accepted(self._song_timer_ref, dancer):
+				return false
+
+			self._enter_closed_position(partner, dancer, move_dir)
+			return true
+		else:
+			return false
 
 	var src_plat = self._platforms_ref.get_platform(dancer.platform_pos)
 	assert(src_plat != null)
