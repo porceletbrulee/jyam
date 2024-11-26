@@ -44,7 +44,7 @@ var _move_state: MoveState
 var _action_toggle_facing = ""
 
 func _ready() -> void:
-	self._anim = get_node("AnimationPlayer")
+	self._anim = get_node("model/AnimationPlayer")
 	self._facecamui_ref = get_node("facecamui")
 	self._facecamui_ref.visible = false
 
