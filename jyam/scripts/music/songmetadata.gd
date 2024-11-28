@@ -9,6 +9,6 @@ var events: Array = []
 
 func _init(_path: String) -> void:
 	# FIXME: load from file
-	self.sec_per_beat = 60.0 / 137.0
+	self.sec_per_beat = 60.0 / 140.0
 	self.beats_per_measure = 3
 	self.sec_per_measure = self.sec_per_beat * self.beats_per_measure

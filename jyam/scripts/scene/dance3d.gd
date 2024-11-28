@@ -17,7 +17,7 @@ func _ready() -> void:
 
 	GameInputs.init_input_map()
 
-	var song_metadata = SongMetadata.new("res://songs/My_Castle_Town.json")
+	var song_metadata = SongMetadata.new("res://songs/midwaltz.json")
 
 	self._ui_scene_debug_ref = get_node("ui/SceneDebug")
 	self._ui_scene_debug_ref.set_visible(false)
@@ -46,7 +46,7 @@ func _ready() -> void:
 	)
 
 	self.audio_player = get_node("AudioStreamPlayer")
-	var song = load("res://songs/My_Castle_Town.ogg")
+	var song = load("res://songs/midwaltz.ogg")
 	self.audio_player.stream = song
 
 	self.song_timer = SongTimer.new(
