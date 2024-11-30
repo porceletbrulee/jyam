@@ -59,7 +59,7 @@ func scene_ready(
 	self.player = assigned_player
 	self.partner_ref = partner
 
-	var plat_point = initial_plat.transform_origin()
+	var plat_point = initial_plat.global_origin
 	plat_point.y = self.transform.origin.y
 	self.transform.origin = plat_point
 
@@ -142,7 +142,7 @@ func _trigger_move_with_offset(
 	state_for_move_animation: GameDancer.State,
 ):
 	assert(self._move_state == null)
-	var dst_point = dst_plat.transform_origin() + offset_from_center
+	var dst_point = dst_plat.global_origin + offset_from_center
 	# FIXME: calculation of height (y-axis) needs some work
 	dst_point.y = self.transform.origin.y
 

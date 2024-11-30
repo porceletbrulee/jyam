@@ -26,13 +26,15 @@ func _ready() -> void:
 	self._ui_player_to_meter[GameLogic.Player.PLAYER_1] = get_node("ui/hud/TopMargin/TopHbox/Player1Meter")
 	self._ui_player_to_meter[GameLogic.Player.PLAYER_2] = get_node("ui/hud/TopMargin/TopHbox/Player2Meter")
 
-	self._spotlight_ref = get_node("spotlight")
+	self._spotlight_ref = get_node("platforms/spotlight")
 	self._spotlight_ref.visible = false
 
 	# TODO: figure out how to dynamically make and attach scripts/properties
 	var p1 = get_node("player1")
 	var p2 = get_node("player2")
-	var platforms = self._setup_platforms()
+	var platform3d = get_node("platforms")
+
+	var platforms = GamePlatforms.new(platform3d)
 
 	var dancer1 = GameDancer.new(
 		GameLogic.Player.PLAYER_1,
@@ -77,26 +79,6 @@ func _ready() -> void:
 		p1)
 
 	self.game_state.play_song()
-
-func _setup_platforms():
-	# on screen, row 0 is closest to the camera
-	var plat_nums = [
-		[0, 1, 2],
-		[3, 4, 5],
-		[6, 7, 8],
-	];
-
-	var plats = []
-	for row in plat_nums:
-		var plat_row = []
-		for num in row:
-			var child_name = "platform" + str(num);
-			var plat = get_node("platforms/" + child_name)
-
-			plat_row.append(plat)
-		plats.append(plat_row)
-
-	return GamePlatforms.new(plats)
 
 func update_player_meter(player: GameLogic.Player, meter: int):
 	var bar = self._ui_player_to_meter[player]

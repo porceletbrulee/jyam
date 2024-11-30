@@ -13,6 +13,8 @@ var _rows_array: Array
 var _rows: int
 var _cols: int
 
+var _platform3d_ref: Platform3D = null
+
 const ACTION_TO_MOVE_DIR = {
 	GameInputs.Action.P1_UP: GameLogic.UP,
 	GameInputs.Action.P1_DOWN: GameLogic.DOWN,
@@ -40,33 +42,33 @@ var cols: int:
 class Platform extends RefCounted:
 	var pos: Vector2
 	var dancers: Dictionary
-	var node3d: Node3D = null
+	var global_origin: Vector3
 
-	func _init(ppos: Vector2, pnode3d: Node3D):
+	func _init(ppos: Vector2, pglobal_origin: Vector3):
 		self.pos = ppos
-		self.node3d = pnode3d
+		self.global_origin = pglobal_origin
 		self.dancers = Dictionary()
 
 	func _to_string() -> String:
 		return "GamePlatforms.Platform({0},{1},{2})".format(
-			[self.pos, self.dancers, self.node3d.name])
+			[self.pos, self.dancers, self.global_origin])
 
-	func transform_origin() -> Vector3:
-		var t = self.node3d.transform
-		return Vector3(
-			t.origin.x,
-			t.origin.y,  # FIXME: add a fraction of the height of platform
-			t.origin.z)
+func _init(platform3d: Platform3D):
+	self._platform3d_ref = platform3d
 
-# m is Array[Array[Node3D]] but that's not supported :(
-func _init(m: Array):
+	var m = self._platform3d_ref.get_platform_map()
+
 	var row_i = 0
 	for row in m:
 		var curr_row = []
 		var col_i = 0
-		for node in row:
-			var pos = Vector2(row_i, col_i)
-			curr_row.append(Platform.new(pos, node))
+		for exists in row:
+			if exists:
+				var pos = Vector2(row_i, col_i)
+				var global_origin = self._platform3d_ref.platform_global_origin(pos)
+				curr_row.append(Platform.new(pos, global_origin))
+			else:
+				curr_row.append(null)
 			col_i += 1
 		self._cols = maxi(self._cols, col_i)
 		self._rows_array.append(curr_row)
