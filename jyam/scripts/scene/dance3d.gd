@@ -4,7 +4,7 @@ var audio_player = null
 var game_state: GameState = null
 var song_timer: SongTimer = null
 
-var _spotlight_ref: Node3D = null
+var _platforms3d_ref: Platform3D = null
 
 var _ui_scene_debug_ref: Control = null
 var _ui_player_to_meter: Dictionary
@@ -26,15 +26,12 @@ func _ready() -> void:
 	self._ui_player_to_meter[GameLogic.Player.PLAYER_1] = get_node("ui/hud/TopMargin/TopHbox/Player1Meter")
 	self._ui_player_to_meter[GameLogic.Player.PLAYER_2] = get_node("ui/hud/TopMargin/TopHbox/Player2Meter")
 
-	self._spotlight_ref = get_node("platforms/spotlight")
-	self._spotlight_ref.visible = false
-
 	# TODO: figure out how to dynamically make and attach scripts/properties
 	var p1 = get_node("player1")
 	var p2 = get_node("player2")
-	var platform3d = get_node("platforms")
+	self._platforms3d_ref = get_node("platforms")
 
-	var platforms = GamePlatforms.new(platform3d)
+	var platforms = GamePlatforms.new(self._platforms3d_ref)
 
 	var dancer1 = GameDancer.new(
 		GameLogic.Player.PLAYER_1,
@@ -83,6 +80,12 @@ func _ready() -> void:
 func update_player_meter(player: GameLogic.Player, meter: int):
 	var bar = self._ui_player_to_meter[player]
 	bar.value = meter
+
+func spotlight_platform(platform_pos: Vector2):
+	self._platforms3d_ref.spotlight_platform(platform_pos)
+
+func unspotlight():
+	self._platforms3d_ref.unspotlight()
 
 func _input(event):
 	if event.is_action_pressed("ui_text_delete"):

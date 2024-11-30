@@ -162,10 +162,16 @@ func _invite_player(player: GameLogic.Player) -> bool:
 	if invite_expired.is_null():
 		return false
 
+	self._dance3d_ref.spotlight_platform(dancer.platform_pos)
+
+	var expired = func(context):
+		invite_expired.call(context)
+		self._dance3d_ref.unspotlight()
+
 	var ev = SongTimer.Event.new(
 		self._song_timer_ref,
 		self._song_timer_ref.sec_per_measure * 3,
-		invite_expired,
+		expired,
 	)
 	self._song_timer_ref.insert_event(ev)
 
