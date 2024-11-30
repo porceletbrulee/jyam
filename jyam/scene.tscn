@@ -290,9 +290,6 @@ fov = 78.2
 size = 23.469
 near = 7.749
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="dance3d"]
-transform = Transform3D(1, 0, 0, 0, 0.999997, -0.00263541, 0, 0.00263541, 0.999997, 0, 3.84603, 14.3452)
-
 [node name="ui" type="Node" parent="dance3d"]
 
 [node name="hud" parent="dance3d/ui" instance=ExtResource("6_ej6wt")]
@@ -309,26 +306,29 @@ visible = false
 mesh = SubResource("BoxMesh_cem3k")
 skeleton = NodePath("../..")
 
-[node name="ceilinglights" type="Node3D" parent="dance3d/platforms"]
+[node name="ambient_lights" type="Node3D" parent="dance3d/platforms"]
 transform = Transform3D(0.166667, 0, 0, 0, 0.166667, 0, 0, 0, 0.166667, 0, 1.71125, 0)
 
-[node name="OmniLight3D" type="OmniLight3D" parent="dance3d/platforms/ceilinglights"]
+[node name="OmniLight3D" type="OmniLight3D" parent="dance3d/platforms/ambient_lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 15, 0)
 light_energy = 6.0
 omni_range = 24.675
 omni_attenuation = 0.0
 
-[node name="OmniLight3D2" type="OmniLight3D" parent="dance3d/platforms/ceilinglights"]
+[node name="OmniLight3D2" type="OmniLight3D" parent="dance3d/platforms/ambient_lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 15, 0)
 light_energy = 6.0
 omni_range = 24.675
 omni_attenuation = 0.0
 
-[node name="OmniLight3D3" type="OmniLight3D" parent="dance3d/platforms/ceilinglights"]
+[node name="OmniLight3D3" type="OmniLight3D" parent="dance3d/platforms/ambient_lights"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 0)
 light_energy = 6.0
 omni_range = 24.675
 omni_attenuation = 0.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="dance3d/platforms/ambient_lights"]
+transform = Transform3D(0.999998, 0, 0, 0, 0.999995, -0.0026354, 0, 0.0026354, 0.999995, 0, -6.42146, 14.3452)
 
 [node name="spotlight" parent="dance3d/platforms" instance=ExtResource("9_o20bb")]
 transform = Transform3D(0.633333, 0, 0, 0, 1.40069, 0, 0, 0, 0.633333, -0.536006, 2.23992, 0)

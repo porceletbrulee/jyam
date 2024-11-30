@@ -163,10 +163,12 @@ func _invite_player(player: GameLogic.Player) -> bool:
 		return false
 
 	self._dance3d_ref.spotlight_platform(dancer.platform_pos)
+	self._dance3d_ref.dim_ambient()
 
 	var expired = func(context):
 		invite_expired.call(context)
 		self._dance3d_ref.unspotlight()
+		self._dance3d_ref.reset_ambient()
 
 	var ev = SongTimer.Event.new(
 		self._song_timer_ref,

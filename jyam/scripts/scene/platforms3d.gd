@@ -9,6 +9,9 @@ var _platform_exists: Array
 
 var _spotlight_ref: Node3D
 
+var _ambient_ref: Node3D
+var _ambient_light_energy: Array[float]
+
 func _ready() -> void:
 	var standard: MeshInstance3D = get_node("platform_standard")
 	var bm: BoxMesh = standard.mesh
@@ -27,6 +30,11 @@ func _ready() -> void:
 	self._spotlight_ref = get_node("spotlight")
 	self._spotlight_ref.visible = false
 
+	self._ambient_ref = get_node("ambient_lights")
+	self._ambient_light_energy = []
+	for n in self._ambient_ref.get_children():
+		var light: Light3D = n
+		self._ambient_light_energy.append(light.light_energy)
 
 func _platform_local_origin(platform_pos: Vector2) -> Vector3:
 	var dst = self.zerozero_local_origin
@@ -53,3 +61,14 @@ func spotlight_platform(platform_pos: Vector2):
 
 func unspotlight():
 	self._spotlight_ref.visible = false
+
+func dim_ambient():
+	for n in self._ambient_ref.get_children():
+		var l: Light3D = n
+		l.light_energy = l.light_energy / 4.0
+
+func reset_ambient():
+	var children = self._ambient_ref.get_children()
+	for i in range(children.size()):
+		var l: Light3D = children[i]
+		l.light_energy = self._ambient_light_energy[i]

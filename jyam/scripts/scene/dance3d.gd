@@ -87,6 +87,12 @@ func spotlight_platform(platform_pos: Vector2):
 func unspotlight():
 	self._platforms3d_ref.unspotlight()
 
+func dim_ambient():
+	self._platforms3d_ref.dim_ambient()
+
+func reset_ambient():
+	self._platforms3d_ref.reset_ambient()
+
 func _input(event):
 	if event.is_action_pressed("ui_text_delete"):
 		self._ui_scene_debug_ref.set_visible(!self._ui_scene_debug_ref.visible)
