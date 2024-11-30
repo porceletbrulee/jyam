@@ -54,7 +54,7 @@ func _enter_closed_position(lead: GameDancer, follow: GameDancer, move_dir: Vect
 				f.call()
 		return _f
 
-	var _move_dancers = func(_context):
+	var _move_dancers = func():
 		var plat = self._platforms_ref.get_platform(lead.platform_pos)
 		assert(plat != null)
 
@@ -77,23 +77,24 @@ func _enter_closed_position(lead: GameDancer, follow: GameDancer, move_dir: Vect
 
 	var interval = self._song_timer_ref.sec_per_beat
 	var events = [
-		[0.0, _eventify.call(
+		[interval * 0, _eventify.call(
 				[
 					func(): lead.dancer3d.show_facecam(),
-					func(): lead_rtl.append_text("please"),
+					func(): lead_rtl.append_text("please please please"),
 				],
 			)
 		],
-		[interval, _eventify.call([func(): lead_rtl.append_text(" please")])],
+		[interval * 1, _eventify.call([func(): lead_rtl.append_text("\nplease please please")])],
 		[interval * 2, _eventify.call([func(): lead_rtl.append_text(" [b]please![/b]")])],
 		[interval * 3, _eventify.call([
 			func(): follow.dancer3d.show_facecam(),
-			func(): follow_rtl.append_text("...ok"),
+			func(): follow_rtl.append_text("..."),
 		])],
-		[interval * 5, _move_dancers],
-		[interval * 8, _eventify.call([
+		[interval * 4, func(_context): follow_rtl.append_text("ok")],
+		[interval * 6, _eventify.call([
 			func(): lead.dancer3d.hide_facecam(),
 			func(): follow.dancer3d.hide_facecam(),
+			_move_dancers,
 		])],
 		# TODO: transition dancers to closed position
 	]
