@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://dmje4cdeul7h6"]
+
+[node name="meter" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1152.0
+offset_bottom = -648.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="topvbox" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="topmargin" type="MarginContainer" parent="topvbox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_right = 20
+
+[node name="tophbox" type="HBoxContainer" parent="topvbox/topmargin"]
+layout_mode = 2
+
+[node name="Player1Meter" type="ProgressBar" parent="topvbox/topmargin/tophbox"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+step = 5.0
+value = 30.0
+show_percentage = false
+
+[node name="MeterSpacer" type="Control" parent="topvbox/topmargin/tophbox"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="Player2Meter" type="ProgressBar" parent="topvbox/topmargin/tophbox"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+step = 5.0
+value = 75.0
+fill_mode = 1
+show_percentage = false
+
+[node name="bottomgap" type="Control" parent="topvbox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 9.0

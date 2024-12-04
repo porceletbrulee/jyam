@@ -1,5 +1,10 @@
 class_name Dance3D extends Node3D
 
+## Player 1's ProgressBar UI element
+@export var player1_meter_ref: ProgressBar
+## Player 2's ProgressBar UI element
+@export var player2_meter_ref: ProgressBar
+
 var audio_player = null
 var game_state: GameState = null
 var song_timer: SongTimer = null
@@ -23,8 +28,8 @@ func _ready() -> void:
 	self._ui_scene_debug_ref.set_visible(false)
 
 	self._ui_player_to_meter = Dictionary()
-	self._ui_player_to_meter[GameLogic.Player.PLAYER_1] = get_node("ui/hud/TopMargin/TopHbox/Player1Meter")
-	self._ui_player_to_meter[GameLogic.Player.PLAYER_2] = get_node("ui/hud/TopMargin/TopHbox/Player2Meter")
+	self._ui_player_to_meter[GameLogic.Player.PLAYER_1] = self.player1_meter_ref
+	self._ui_player_to_meter[GameLogic.Player.PLAYER_2] = self.player2_meter_ref
 
 	# TODO: figure out how to dynamically make and attach scripts/properties
 	var p1 = get_node("player1")
