@@ -13,6 +13,8 @@ var _platforms3d_ref: Platform3D = null
 
 var _ui_scene_debug_ref: Control = null
 var _ui_player_to_meter: Dictionary
+var _ui_inputbuffer_ref: Control = null
+
 var _last_beat: int = -1
 
 # Called when the node enters the scene tree for the first time.
@@ -81,6 +83,9 @@ func _ready() -> void:
 		p1)
 
 	self.game_state.play_song()
+
+func _setup_ui():
+	self._ui_inputbuffer_ref = get_node("ui/inputbuffer")
 
 func update_player_meter(player: GameLogic.Player, meter: int):
 	var bar = self._ui_player_to_meter[player]

@@ -1,15 +1,16 @@
-[gd_scene load_steps=18 format=3 uid="uid://de4uuseyx7ow2"]
+[gd_scene load_steps=19 format=3 uid="uid://de4uuseyx7ow2"]
 
 [ext_resource type="Script" path="res://scripts/scene/dance3d.gd" id="1_tnr3l"]
 [ext_resource type="Script" path="res://scripts/scene/dancer3d.gd" id="4_iy7ff"]
 [ext_resource type="Material" uid="uid://cuibyl7rdbydt" path="res://materials/puppymaid_apron.tres" id="5_jy7p1"]
-[ext_resource type="PackedScene" uid="uid://dmje4cdeul7h6" path="res://ui/hud.tscn" id="6_ej6wt"]
+[ext_resource type="PackedScene" uid="uid://dmje4cdeul7h6" path="res://ui/meter.tscn" id="6_ej6wt"]
 [ext_resource type="PackedScene" uid="uid://ch3k52glg52di" path="res://ui/scene_debug.tscn" id="6_mirw1"]
 [ext_resource type="Material" uid="uid://dq5aejuyar440" path="res://materials/puppymaid_dress.tres" id="6_mmug8"]
 [ext_resource type="Material" uid="uid://oj1n81iaa53v" path="res://materials/puppymaid_head.tres" id="9_5cxf2"]
 [ext_resource type="Script" path="res://ui/facecam.gd" id="9_g1m4l"]
 [ext_resource type="PackedScene" uid="uid://bxgjiuj133no4" path="res://models/cone.blend" id="9_o20bb"]
 [ext_resource type="Material" uid="uid://bobpgmp87ofgi" path="res://materials/puppymaid_spotlight.tres" id="10_7n5k6"]
+[ext_resource type="PackedScene" uid="uid://b16ng32i6osfh" path="res://ui/inputbuffer.tscn" id="10_nj680"]
 [ext_resource type="Script" path="res://scripts/scene/platforms3d.gd" id="11_kbr0h"]
 [ext_resource type="PackedScene" uid="uid://dnt5elcenc77k" path="res://models/dancestage.glb" id="12_dnr35"]
 [ext_resource type="Material" uid="uid://dgv0ljluuaq1x" path="res://materials/starfield.tres" id="13_ej4fu"]
@@ -32,8 +33,10 @@ subdivide_depth = 32
 
 [node name="root" type="Node3D"]
 
-[node name="dance3d" type="Node3D" parent="."]
+[node name="dance3d" type="Node3D" parent="." node_paths=PackedStringArray("player1_meter_ref", "player2_meter_ref")]
 script = ExtResource("1_tnr3l")
+player1_meter_ref = NodePath("ui/meter/topvbox/topmargin/tophbox/Player1Meter")
+player2_meter_ref = NodePath("ui/meter/topvbox/topmargin/tophbox/Player2Meter")
 
 [node name="player1" type="Node3D" parent="dance3d"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.9352, 0)
@@ -53,6 +56,7 @@ surface_material_override/6 = ExtResource("6_mmug8")
 surface_material_override/7 = ExtResource("6_mmug8")
 
 [node name="facecamui" type="Control" parent="dance3d/player1"]
+visible = false
 z_index = 3
 z_as_relative = false
 layout_mode = 3
@@ -84,8 +88,8 @@ stretch = true
 
 [node name="viewport" type="SubViewport" parent="dance3d/player1/facecamui/vbox/margin/facecam"]
 handle_input_locally = false
-size = Vector2i(253, 128)
-render_target_update_mode = 4
+size = Vector2i(96, 128)
+render_target_update_mode = 0
 
 [node name="facecam" type="Camera3D" parent="dance3d/player1/facecamui/vbox/margin/facecam/viewport" node_paths=PackedStringArray("follow_target")]
 transform = Transform3D(1, 0, 0, 0, 0.982376, 0.186918, 0, -0.186918, 0.982376, 0, 11.5655, 7.71146)
@@ -120,6 +124,7 @@ mesh = SubResource("BoxMesh_mfuqr")
 [node name="AnimationPlayer" type="AnimationPlayer" parent="dance3d/player2/model"]
 
 [node name="facecamui" type="Control" parent="dance3d/player2"]
+visible = false
 z_index = 3
 z_as_relative = false
 layout_mode = 3
@@ -151,8 +156,8 @@ stretch = true
 
 [node name="viewport" type="SubViewport" parent="dance3d/player2/facecamui/vbox/margin/facecam"]
 handle_input_locally = false
-size = Vector2i(253, 128)
-render_target_update_mode = 4
+size = Vector2i(96, 128)
+render_target_update_mode = 0
 
 [node name="facecam" type="Camera3D" parent="dance3d/player2/facecamui/vbox/margin/facecam/viewport" node_paths=PackedStringArray("follow_target")]
 transform = Transform3D(1, 0, 0, 0, 0.982376, 0.186918, 0, -0.186918, 0.982376, 14.2161, 6.457, 7.711)
@@ -188,9 +193,12 @@ near = 7.749
 
 [node name="ui" type="Node" parent="dance3d"]
 
-[node name="hud" parent="dance3d/ui" instance=ExtResource("6_ej6wt")]
+[node name="meter" parent="dance3d/ui" instance=ExtResource("6_ej6wt")]
 
 [node name="SceneDebug" parent="dance3d/ui" instance=ExtResource("6_mirw1")]
+visible = false
+
+[node name="inputbuffer" parent="dance3d/ui" instance=ExtResource("10_nj680")]
 
 [node name="platforms" parent="dance3d" instance=ExtResource("12_dnr35")]
 transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 6, 0, 0, 0)

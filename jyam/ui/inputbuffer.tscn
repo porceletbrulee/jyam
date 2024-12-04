@@ -1,0 +1,228 @@
+[gd_scene load_steps=12 format=3 uid="uid://b16ng32i6osfh"]
+
+[ext_resource type="Script" path="res://scripts/scene/inputbuffer_ui.gd" id="1_mnoqk"]
+[ext_resource type="Theme" uid="uid://dymiilajyvow1" path="res://ui/inputbuffer_theme.tres" id="1_ofc3g"]
+[ext_resource type="Shader" path="res://shaders/inputbuffer_playerpanel.gdshader" id="2_1xcks"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_luiwf"]
+bg_color = Color(0.864675, 0.864675, 0.864675, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d254m"]
+bg_color = Color(0, 1, 0, 0)
+border_width_bottom = 1
+border_color = Color(0, 1, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k1nbd"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_top = 1
+border_color = Color(0, 1, 0, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iorns"]
+shader = ExtResource("2_1xcks")
+shader_parameter/CHEVRON_COLOR = Color(0, 1, 0, 0)
+shader_parameter/BACKGROUND_COLOR = Color(0, 1, 0, 1)
+shader_parameter/SPEED = 0.1
+shader_parameter/THICKNESS = 0.03
+shader_parameter/HEIGHT = 0.03
+shader_parameter/GAP = 0.02
+shader_parameter/ALONG_POSITIVE_AXIS = true
+shader_parameter/ALONG_X_AXIS = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d72gd"]
+shader = ExtResource("2_1xcks")
+shader_parameter/CHEVRON_COLOR = Color(0, 1, 0, 1)
+shader_parameter/BACKGROUND_COLOR = Color(0, 0, 0, 0)
+shader_parameter/SPEED = 0.0
+shader_parameter/THICKNESS = 0.4
+shader_parameter/HEIGHT = 0.6
+shader_parameter/GAP = 0.0
+shader_parameter/ALONG_POSITIVE_AXIS = false
+shader_parameter/ALONG_X_AXIS = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oaep0"]
+shader = ExtResource("2_1xcks")
+shader_parameter/CHEVRON_COLOR = Color(0, 1, 0, 1)
+shader_parameter/BACKGROUND_COLOR = Color(0, 0, 0, 0)
+shader_parameter/SPEED = 0.0
+shader_parameter/THICKNESS = 0.4
+shader_parameter/HEIGHT = 0.6
+shader_parameter/GAP = 0.0
+shader_parameter/ALONG_POSITIVE_AXIS = true
+shader_parameter/ALONG_X_AXIS = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vvj2q"]
+shader = ExtResource("2_1xcks")
+shader_parameter/CHEVRON_COLOR = Color(0, 1, 0, 1)
+shader_parameter/BACKGROUND_COLOR = Color(0, 0, 0, 0)
+shader_parameter/SPEED = 0.0
+shader_parameter/THICKNESS = 0.4
+shader_parameter/HEIGHT = 0.6
+shader_parameter/GAP = 0.0
+shader_parameter/ALONG_POSITIVE_AXIS = false
+shader_parameter/ALONG_X_AXIS = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r644s"]
+shader = ExtResource("2_1xcks")
+shader_parameter/CHEVRON_COLOR = Color(0, 1, 0, 1)
+shader_parameter/BACKGROUND_COLOR = Color(0, 0, 0, 0)
+shader_parameter/SPEED = 0.0
+shader_parameter/THICKNESS = 0.4
+shader_parameter/HEIGHT = 0.6
+shader_parameter/GAP = 0.0
+shader_parameter/ALONG_POSITIVE_AXIS = true
+shader_parameter/ALONG_X_AXIS = true
+
+[node name="inputbuffer" type="Control" node_paths=PackedStringArray("p1_hbox", "p2_hbox")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mnoqk")
+p1_hbox = NodePath("vbox/hbox/panel/vbox/panelp1/marginp1/hboxp1/buttonsp1")
+p2_hbox = NodePath("vbox/hbox/panel/vbox/panelp2/marginp2/hboxp2/buttonsp2")
+INPUT_PANEL_ENABLED_COLOR = Color(0, 1, 0, 1)
+INPUT_PANEL_DISABLED_COLOR = Color(0.862745, 0.862745, 0.862745, 1)
+
+[node name="vbox" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="topgap" type="Control" parent="vbox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 5.0
+
+[node name="hbox" type="HBoxContainer" parent="vbox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="gap" type="Control" parent="vbox/hbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="panel" type="PanelContainer" parent="vbox/hbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 4.0
+theme = ExtResource("1_ofc3g")
+
+[node name="vbox" type="VBoxContainer" parent="vbox/hbox/panel"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+theme_override_constants/separation = 0
+
+[node name="paneltop" type="PanelContainer" parent="vbox/hbox/panel/vbox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+theme_override_styles/panel = SubResource("StyleBoxFlat_luiwf")
+
+[node name="panelp1" type="PanelContainer" parent="vbox/hbox/panel/vbox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_d254m")
+
+[node name="marginp1" type="MarginContainer" parent="vbox/hbox/panel/vbox/panelp1"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="hboxp1" type="HBoxContainer" parent="vbox/hbox/panel/vbox/panelp1/marginp1"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="labelp1" type="Label" parent="vbox/hbox/panel/vbox/panelp1/marginp1/hboxp1"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0.862745, 0.862745, 0.862745, 1)
+text = "P1"
+
+[node name="buttonsp1" type="HBoxContainer" parent="vbox/hbox/panel/vbox/panelp1/marginp1/hboxp1"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 9.0
+theme_override_constants/separation = 10
+
+[node name="panelp2" type="PanelContainer" parent="vbox/hbox/panel/vbox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_k1nbd")
+
+[node name="marginp2" type="MarginContainer" parent="vbox/hbox/panel/vbox/panelp2"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="hboxp2" type="HBoxContainer" parent="vbox/hbox/panel/vbox/panelp2/marginp2"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="labelp2" type="Label" parent="vbox/hbox/panel/vbox/panelp2/marginp2/hboxp2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0.862745, 0.862745, 0.862745, 1)
+text = "P2"
+
+[node name="buttonsp2" type="HBoxContainer" parent="vbox/hbox/panel/vbox/panelp2/marginp2/hboxp2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 9.0
+theme_override_constants/separation = 10
+
+[node name="panelbottom" type="PanelContainer" parent="vbox/hbox/panel/vbox"]
+material = SubResource("ShaderMaterial_iorns")
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="gap2" type="Control" parent="vbox/hbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="bottomgap" type="Control" parent="vbox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="templates" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="up" type="Panel" parent="templates"]
+material = SubResource("ShaderMaterial_d72gd")
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="down" type="Panel" parent="templates"]
+material = SubResource("ShaderMaterial_oaep0")
+layout_mode = 0
+size_flags_horizontal = 3
+
+[node name="left" type="Panel" parent="templates"]
+material = SubResource("ShaderMaterial_vvj2q")
+layout_mode = 0
+size_flags_horizontal = 3
+
+[node name="right" type="Panel" parent="templates"]
+material = SubResource("ShaderMaterial_r644s")
+layout_mode = 0
+size_flags_horizontal = 3
+
+[node name="buttonpanel" type="PanelContainer" parent="templates"]
+layout_mode = 2
+offset_left = 375.0
+offset_top = 388.0
+offset_right = 799.0
+offset_bottom = 423.0
+size_flags_horizontal = 3
