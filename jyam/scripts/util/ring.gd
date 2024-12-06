@@ -26,7 +26,7 @@ func _init(size: int):
 	self._tail = 0
 	self._count = 0
 	
-func enqueue(o: Object) -> bool:
+func enqueue(o: Variant) -> bool:
 	if self._count == self.cap:
 		return false
 	
@@ -37,7 +37,7 @@ func enqueue(o: Object) -> bool:
 	self._count += 1
 	return true
 	
-func dequeue() -> Object:
+func dequeue() -> Variant:
 	if self._count == 0:
 		return null
 		
@@ -114,5 +114,3 @@ static func _unittest():
 	check.clear()
 	for val in a:
 		assert(val.get_reference_count() == 2)
-	
-	print_debug("ring unittest done")
