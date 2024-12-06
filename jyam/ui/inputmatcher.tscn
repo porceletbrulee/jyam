@@ -1,8 +1,8 @@
 [gd_scene load_steps=12 format=3 uid="uid://b16ng32i6osfh"]
 
-[ext_resource type="Script" path="res://scripts/scene/inputbuffer_ui.gd" id="1_mnoqk"]
-[ext_resource type="Theme" uid="uid://dymiilajyvow1" path="res://ui/inputbuffer_theme.tres" id="1_ofc3g"]
-[ext_resource type="Shader" path="res://shaders/inputbuffer_playerpanel.gdshader" id="2_1xcks"]
+[ext_resource type="Script" path="res://scripts/scene/inputmatcher_ui.gd" id="1_mnoqk"]
+[ext_resource type="Theme" uid="uid://dymiilajyvow1" path="res://ui/inputmatcher_theme.tres" id="1_ofc3g"]
+[ext_resource type="Shader" path="res://shaders/inputmatcher_playerpanel.gdshader" id="2_1xcks"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_luiwf"]
 bg_color = Color(0.864675, 0.864675, 0.864675, 1)
@@ -72,7 +72,7 @@ shader_parameter/GAP = 0.0
 shader_parameter/ALONG_POSITIVE_AXIS = true
 shader_parameter/ALONG_X_AXIS = true
 
-[node name="inputbuffer" type="Control" node_paths=PackedStringArray("p1_hbox", "p2_hbox")]
+[node name="inputmatcher" type="Control" node_paths=PackedStringArray("p1_hbox", "p2_hbox")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

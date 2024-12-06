@@ -10,7 +10,7 @@
 [ext_resource type="Script" path="res://ui/facecam.gd" id="9_g1m4l"]
 [ext_resource type="PackedScene" uid="uid://bxgjiuj133no4" path="res://models/cone.blend" id="9_o20bb"]
 [ext_resource type="Material" uid="uid://bobpgmp87ofgi" path="res://materials/puppymaid_spotlight.tres" id="10_7n5k6"]
-[ext_resource type="PackedScene" uid="uid://b16ng32i6osfh" path="res://ui/inputbuffer.tscn" id="10_nj680"]
+[ext_resource type="PackedScene" uid="uid://b16ng32i6osfh" path="res://ui/inputmatcher.tscn" id="10_nj680"]
 [ext_resource type="Script" path="res://scripts/scene/platforms3d.gd" id="11_kbr0h"]
 [ext_resource type="PackedScene" uid="uid://dnt5elcenc77k" path="res://models/dancestage.glb" id="12_dnr35"]
 [ext_resource type="Material" uid="uid://dgv0ljluuaq1x" path="res://materials/starfield.tres" id="13_ej4fu"]
@@ -198,7 +198,7 @@ near = 7.749
 [node name="SceneDebug" parent="dance3d/ui" instance=ExtResource("6_mirw1")]
 visible = false
 
-[node name="inputbuffer" parent="dance3d/ui" instance=ExtResource("10_nj680")]
+[node name="inputmatcher" parent="dance3d/ui" instance=ExtResource("10_nj680")]
 
 [node name="platforms" parent="dance3d" instance=ExtResource("12_dnr35")]
 transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 6, 0, 0, 0)

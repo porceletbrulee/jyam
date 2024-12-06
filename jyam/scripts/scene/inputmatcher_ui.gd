@@ -1,12 +1,12 @@
-class_name InputBufferUI extends Control
+class_name InputMatcherUI extends Control
 
-## HBoxContainer for P1 inputs in inputbuffer UI
+## HBoxContainer for P1 inputs
 @export var p1_hbox: HBoxContainer
 
-## HBoxContainer for P2 inputs in inputbuffer UI
+## HBoxContainer for P2 inputs
 @export var p2_hbox: HBoxContainer
 
-@export var MAX_INPUTS: int = 8
+const MAX_INPUTS: int = 8
 
 ## Color when input panel is ready to take inputs
 @export var INPUT_PANEL_ENABLED_COLOR: Color
@@ -22,7 +22,7 @@ var down_button: Panel
 var left_button: Panel
 var right_button: Panel
 
-# state that's only valid when inputbuffer is active
+# state that's only valid after begin
 var _player_to_child_index: Dictionary
 var _first_button_index: int
 var _num_inputs: int
@@ -41,11 +41,9 @@ func _ready() -> void:
 
 	self._player_to_child_index = {}
 
-	self.clear_and_hide_inputbuffer()
+	self.end_inputmatcher()
 
-	self.init_and_show_inputbuffer(5, GameLogic.Player.PLAYER_1)
-
-func clear_and_hide_inputbuffer() -> void:
+func end_inputmatcher() -> void:
 	for hbox in self._player_hboxes.values():
 		var children = hbox.get_children()
 		for child in children:
@@ -71,7 +69,7 @@ static func _panel_stylebox() -> StyleBoxFlat:
 	flat.border_width_right = 2
 	return flat
 
-func init_and_show_inputbuffer(num_inputs: int, lead_player: GameLogic.Player) -> void:
+func begin_inputmatcher(num_inputs: int, lead_player: GameLogic.Player) -> void:
 	assert(num_inputs <= self.MAX_INPUTS)
 
 	self._num_inputs = num_inputs
@@ -83,12 +81,12 @@ func init_and_show_inputbuffer(num_inputs: int, lead_player: GameLogic.Player) -
 		var first_button_index = 0
 		var hbox = self._player_hboxes[p]
 		for i in range(num_before):
-			hbox.add_child(InputBufferUI._hbox_spacer_control())
+			hbox.add_child(InputMatcherUI._hbox_spacer_control())
 			first_button_index += 1
 
 		for i in range(num_inputs):
 			var b: PanelContainer = self.buttonpanel.duplicate()
-			var flat = InputBufferUI._panel_stylebox()
+			var flat = InputMatcherUI._panel_stylebox()
 			flat.border_color = (self.INPUT_PANEL_ENABLED_COLOR
 								 if p == lead_player
 								 else self.INPUT_PANEL_DISABLED_COLOR)
@@ -97,7 +95,7 @@ func init_and_show_inputbuffer(num_inputs: int, lead_player: GameLogic.Player) -
 			hbox.add_child(b)
 
 		for i in range(num_after):
-			hbox.add_child(InputBufferUI._hbox_spacer_control())
+			hbox.add_child(InputMatcherUI._hbox_spacer_control())
 
 		for child in hbox.get_children():
 			child.visible = true
@@ -107,14 +105,14 @@ func init_and_show_inputbuffer(num_inputs: int, lead_player: GameLogic.Player) -
 		hbox.visible = true
 	self.visible = true
 
-func enable_follower_inputbuffer(follow_player: GameLogic.Player) -> void:
+func allow_follower_inputs(follow_player: GameLogic.Player) -> void:
 	assert(self._num_inputs > 0)
 
 	var hbox = self._player_hboxes[follow_player]
 	assert(self._num_inputs < hbox.get_child_count())
 	for i in range(self._num_inputs):
 		var button: PanelContainer = hbox.get_child(self._first_button_index + i)
-		var flat = InputBufferUI._panel_stylebox()
+		var flat = InputMatcherUI._panel_stylebox()
 		flat.border_color = self.INPUT_PANEL_ENABLED_COLOR
 		button.add_theme_stylebox_override("panel", flat)
 
