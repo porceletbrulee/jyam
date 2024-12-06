@@ -44,6 +44,7 @@ func _ready() -> void:
 	self.end_inputmatcher()
 
 func end_inputmatcher() -> void:
+	self.visible = false
 	for hbox in self._player_hboxes.values():
 		var children = hbox.get_children()
 		for child in children:
@@ -51,7 +52,6 @@ func end_inputmatcher() -> void:
 			child.queue_free()
 	self._first_button_index = -1
 	self._num_inputs = -1
-	self.visible = false
 
 static func _hbox_spacer_control() -> Control:
 	var spacer = Control.new()
@@ -116,7 +116,7 @@ func allow_follower_inputs(follow_player: GameLogic.Player) -> void:
 		flat.border_color = self.INPUT_PANEL_ENABLED_COLOR
 		button.add_theme_stylebox_override("panel", flat)
 
-func add_player_input(player: GameLogic.Player, input: GameInputs.Action) -> void:
+func enqueue_input(player: GameLogic.Player, input: GameInputs.Action) -> void:
 	var hbox = self._player_hboxes[player]
 	var i = self._player_to_child_index[player]
 	assert(i < self._num_inputs)

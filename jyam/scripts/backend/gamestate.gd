@@ -4,6 +4,8 @@ var _dance3d_ref: Dance3D
 var _song_timer_ref: SongTimer = null
 var _platforms_ref: GamePlatforms = null
 var _player_to_dancer: Dictionary
+var _inputmatcher_ref: GameInputMatcher = null
+
 var _player_to_anticipation_meter: Dictionary
 
 var _paused: bool = false
@@ -13,8 +15,9 @@ var _last_measure: int
 
 func _init(dance3d: Dance3D,
 		   song_timer: SongTimer,
-		   platforms,
-		   dancers):
+		   inputmatcher_ui: InputMatcherUI,
+		   platforms: GamePlatforms,
+		   dancers: Array):
 	self._dance3d_ref = dance3d
 	self._song_timer_ref = song_timer
 	self._platforms_ref = platforms
@@ -23,6 +26,9 @@ func _init(dance3d: Dance3D,
 		self._player_to_dancer[d.player] = d
 		self._player_to_anticipation_meter[d.player] = 0
 		self._platforms_ref.set_dancer(d, d.platform_pos)
+
+	self._inputmatcher_ref = GameInputMatcher.new(inputmatcher_ui,
+												 song_timer.beats_per_measure * 2)
 
 	self._paused = false
 
@@ -77,8 +83,8 @@ func _enter_closed_position(lead: GameDancer, follow: GameDancer, move_dir: Vect
 				],
 			)
 		],
-		[interval * 1, _eventify.call([func(): lead_rtl.append_text("\nplease please please")])],
-		[interval * 2, _eventify.call([func(): lead_rtl.append_text(" [b]please![/b]")])],
+		[interval * 1, func(_context): lead_rtl.append_text("\nplease please please")],
+		[interval * 2, func(_context): lead_rtl.append_text(" [b]please![/b]")],
 		[interval * 3, _eventify.call([
 			func(): follow.dancer3d.show_facecam(),
 			func(): follow_rtl.append_text("..."),
@@ -89,7 +95,10 @@ func _enter_closed_position(lead: GameDancer, follow: GameDancer, move_dir: Vect
 			func(): follow.dancer3d.hide_facecam(),
 			_move_dancers,
 		])],
-		# TODO: transition dancers to closed position
+		[interval * 7, _eventify.call([
+			func(): self._inputmatcher_ref.begin_inputmatcher(lead.player),
+			# TODO: expiration for input matching
+		])]
 	]
 	for i in events:
 		var ev = SongTimer.Event.new(
@@ -160,9 +169,9 @@ func _invite_player(player: GameLogic.Player) -> bool:
 	self._dance3d_ref.dim_ambient()
 
 	var expired = func(context):
-		invite_expired.call(context)
-		self._dance3d_ref.unspotlight()
-		self._dance3d_ref.reset_ambient()
+		if invite_expired.call(context):
+			self._dance3d_ref.unspotlight()
+			self._dance3d_ref.reset_ambient()
 
 	var ev = SongTimer.Event.new(
 		self._song_timer_ref,
@@ -173,8 +182,27 @@ func _invite_player(player: GameLogic.Player) -> bool:
 
 	return true
 
+func _inputmatcher_enqueue(player: GameLogic.Player, action: GameInputs.Action) -> bool:
+	# TODO: some UX to hint mis-input
+	if not self._inputmatcher_ref.enqueue_input(player, action):
+		return false
+
+	if (self._inputmatcher_ref.is_lead_full() and
+		self._inputmatcher_ref.is_follower_full()):
+		self._inputmatcher_ref.end_inputmatcher()
+
+	return true
+
 func _perform_action(action: GameInputs.Action) -> bool:
+	if self._inputmatcher_ref.is_dequeueing_inputs:
+		# TODO:
+		return false
+
 	var player = GameInputs.ACTION_TO_PLAYER.get(action)
+
+	if self._inputmatcher_ref.is_accepting_inputs:
+		return self._inputmatcher_enqueue(player, action)
+
 	var move_dir = GamePlatforms.ACTION_TO_MOVE_DIR.get(action)
 	if move_dir != null:
 		return self._move_player(player, move_dir)

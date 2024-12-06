@@ -203,20 +203,21 @@ func trigger_invite(song_timer: SongTimer) -> Callable:
 	var seq = self._new_cancellable_seq()
 	self._pending_invite_seq = seq
 
-	var _invite_expired = func(_context):
+	var _invite_expired = func(_context) -> bool:
 		if self._cancelled_seqs.get(seq, true):
 			if DEBUG:
 				print_debug("{0}: skipping invite_expired for seq {1}".format([
 					self, seq
 				]))
 			self._cancelled_seqs.erase(seq)
-			return
+			return false
 
 		assert(seq == self._pending_invite_seq)
 		self.invite_expired(song_timer)
 		# TODO: may race with accepting invite
 		self._cancelled_seqs.erase(seq)
 		self._pending_invite_seq = -1
+		return true
 
 	return _invite_expired
 

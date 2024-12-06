@@ -13,7 +13,7 @@ var _platforms3d_ref: Platform3D = null
 
 var _ui_scene_debug_ref: Control = null
 var _ui_player_to_meter: Dictionary
-var _ui_inputbuffer_ref: Control = null
+var _ui_inputmatcher_ref: Control = null
 
 var _last_beat: int = -1
 
@@ -36,6 +36,7 @@ func _ready() -> void:
 	# TODO: figure out how to dynamically make and attach scripts/properties
 	var p1 = get_node("player1")
 	var p2 = get_node("player2")
+	var inputmatcher_ui: InputMatcherUI = get_node("ui/inputmatcher")
 	self._platforms3d_ref = get_node("platforms")
 
 	var platforms = GamePlatforms.new(self._platforms3d_ref)
@@ -67,6 +68,7 @@ func _ready() -> void:
 	self.game_state = GameState.new(
 		self,
 		song_timer,
+		inputmatcher_ui,
 		platforms,
 		[dancer1, dancer2],
 	)
@@ -85,7 +87,7 @@ func _ready() -> void:
 	self.game_state.play_song()
 
 func _setup_ui():
-	self._ui_inputbuffer_ref = get_node("ui/inputbuffer")
+	self._ui_inputmatcher_ref = get_node("ui/inputmatcher")
 
 func update_player_meter(player: GameLogic.Player, meter: int):
 	var bar = self._ui_player_to_meter[player]
