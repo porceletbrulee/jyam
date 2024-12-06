@@ -43,3 +43,14 @@ static func opposite_dir(d: Vector2) -> Vector2:
 		_:
 			assert(false, "oops {0}".format([d]))
 			return Vector2(0, 0)
+
+static func opposite_player(p: GameLogic.Player) -> GameLogic.Player:
+	match p:
+		GameLogic.Player.PLAYER_1:
+			return GameLogic.Player.PLAYER_2
+		GameLogic.Player.PLAYER_2:
+			return GameLogic.Player.PLAYER_1
+		_:
+			print_debug("invalid opposite player {0}".format([p]))
+			assert(false)
+			return GameLogic.Player.PLAYER_NONE

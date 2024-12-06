@@ -34,13 +34,6 @@ func anticipation_meter(player: GameLogic.Player) -> int:
 	assert(val != null)
 	return val
 
-func _other_player(player: GameLogic.Player) -> GameLogic.Player:
-	assert(player != GameLogic.Player.PLAYER_NONE)
-	if player == GameLogic.Player.PLAYER_1:
-		return GameLogic.Player.PLAYER_2
-	else:
-		return GameLogic.Player.PLAYER_1
-
 func _enter_closed_position(lead: GameDancer, follow: GameDancer, move_dir: Vector2):
 	print_debug("enter: lead {0} follow {1} {2}".format([lead, follow, move_dir]))
 
