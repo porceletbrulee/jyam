@@ -112,7 +112,7 @@ func clear():
 		self._heap[i] = null
 	self._count = 0
 
-static func _unittest():
+static func _unittest() -> bool:
 	var min_float = func(l: float, r: float) -> bool:
 		return l < r
 			
@@ -177,3 +177,4 @@ static func _unittest():
 		
 	tls.sort_custom(lt_obj)
 	simple_test.call(heap, tls, false, true)
+	return true

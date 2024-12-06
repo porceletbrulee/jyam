@@ -19,8 +19,8 @@ var _last_beat: int = -1
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	Ring._unittest()
-	MinHeap._unittest()
+	assert(Ring._unittest())
+	assert(MinHeap._unittest())
 
 	GameInputs.init_input_map()
 

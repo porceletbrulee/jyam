@@ -48,7 +48,7 @@ func dequeue() -> Variant:
 	self._count -= 1
 	return o
 	
-static func _unittest():
+static func _unittest() -> bool:
 	var r = Ring.new(5)
 	var a = Array()
 	for i in range(r.cap):
@@ -114,3 +114,4 @@ static func _unittest():
 	check.clear()
 	for val in a:
 		assert(val.get_reference_count() == 2)
+	return true
