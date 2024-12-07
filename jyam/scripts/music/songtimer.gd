@@ -123,8 +123,9 @@ func _update_curr_sec() -> float:
 			self._latency_warned = true
 	return result
 
-func insert_event(event: SongTimer.Event) -> bool:
-	return self.events.push(event)
+func insert_delayed_event(pdelay: float, pcallback: Callable) -> bool:
+	var ev = SongTimer.Event.new(self, pdelay, pcallback)
+	return self.events.push(ev)
 
 func physics_process(_delta: float) -> void:
 	if not self._asp_ref.playing:

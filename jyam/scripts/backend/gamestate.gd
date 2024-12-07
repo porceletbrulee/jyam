@@ -67,12 +67,7 @@ func _enter_closed_position(lead: GameDancer, follow: GameDancer, move_dir: Vect
 			lead.finish_move_to_closed_position(self._song_timer_ref)
 			follow.finish_move_to_closed_position(self._song_timer_ref)
 
-		var ev = SongTimer.Event.new(
-			self._song_timer_ref,
-			move_duration_sec,
-			finish_move,
-		)
-		self._song_timer_ref.insert_event(ev)
+		self._song_timer_ref.insert_delayed_event(move_duration_sec, finish_move)
 
 	var interval = self._song_timer_ref.sec_per_beat
 	var events = [
@@ -101,12 +96,7 @@ func _enter_closed_position(lead: GameDancer, follow: GameDancer, move_dir: Vect
 		])]
 	]
 	for i in events:
-		var ev = SongTimer.Event.new(
-			self._song_timer_ref,
-			i[0],
-			i[1],
-		)
-		self._song_timer_ref.insert_event(ev)
+		self._song_timer_ref.insert_delayed_event(i[0], i[1])
 
 func _move_player(player: GameLogic.Player, move_dir: Vector2):
 	var dancer = self._player_to_dancer[player]
@@ -145,12 +135,7 @@ func _move_player(player: GameLogic.Player, move_dir: Vector2):
 		self._platforms_ref.finish_move(dancer, dst_plat)
 		dancer.finish_move(self._song_timer_ref)
 
-	var ev = SongTimer.Event.new(
-		self._song_timer_ref,
-		move_duration_sec,
-		finish_move,
-	)
-	self._song_timer_ref.insert_event(ev)
+	self._song_timer_ref.insert_delayed_event(move_duration_sec, finish_move)
 
 	return true
 
@@ -173,12 +158,10 @@ func _invite_player(player: GameLogic.Player) -> bool:
 			self._dance3d_ref.unspotlight()
 			self._dance3d_ref.reset_ambient()
 
-	var ev = SongTimer.Event.new(
-		self._song_timer_ref,
-		self._song_timer_ref.sec_per_measure * 3,
-		expired,
+	self._song_timer_ref.insert_delayed_event(
+		self._song_timer_ref.sec_per_measure * 3, expired
 	)
-	self._song_timer_ref.insert_event(ev)
+
 
 	return true
 
