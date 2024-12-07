@@ -105,16 +105,16 @@ func begin_inputmatcher(num_inputs: int, lead_player: GameLogic.Player) -> void:
 		hbox.visible = true
 	self.visible = true
 
-func allow_follower_inputs(follow_player: GameLogic.Player) -> void:
+func allow_nth_follower_input(follow_player: GameLogic.Player, n: int) -> void:
 	assert(self._num_inputs > 0)
 
 	var hbox = self._player_hboxes[follow_player]
 	assert(self._num_inputs < hbox.get_child_count())
-	for i in range(self._num_inputs):
-		var button: PanelContainer = hbox.get_child(self._first_button_index + i)
-		var flat = InputMatcherUI._panel_stylebox()
-		flat.border_color = self.INPUT_PANEL_ENABLED_COLOR
-		button.add_theme_stylebox_override("panel", flat)
+
+	var button: PanelContainer = hbox.get_child(self._first_button_index + n)
+	var flat = InputMatcherUI._panel_stylebox()
+	flat.border_color = self.INPUT_PANEL_ENABLED_COLOR
+	button.add_theme_stylebox_override("panel", flat)
 
 func enqueue_input(player: GameLogic.Player, input: GameInputs.Action) -> void:
 	var hbox = self._player_hboxes[player]
