@@ -68,3 +68,16 @@ func end_inputmatcher() -> void:
 	self.is_accepting_inputs = false
 	self._ui_ref.end_inputmatcher()
 	self.is_dequeueing_inputs = true
+
+func dequeue_all() -> Array[Dictionary]:
+	var p1 = self._player_inputs[GameLogic.Player.PLAYER_1]
+	var p2 = self._player_inputs[GameLogic.Player.PLAYER_2]
+
+	var all_inputs: Array[Dictionary] = []
+	while p1.count > 0 or p2.count > 0:
+		var d = {
+			GameLogic.Player.PLAYER_1: p1.dequeue(),
+			GameLogic.Player.PLAYER_2: p2.dequeue(),
+		}
+		all_inputs.append(d)
+	return all_inputs

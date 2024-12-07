@@ -162,8 +162,12 @@ func _invite_player(player: GameLogic.Player) -> bool:
 		self._song_timer_ref.sec_per_measure * 3, expired
 	)
 
-
 	return true
+
+func _process_inputmatcher_dequeued(
+	lead_action: GameInputs.Action,
+	follower_action: GameInputs.Action):
+	print_debug("dequeued {0} {1}".format([lead_action, follower_action]))
 
 func _inputmatcher_enqueue(player: GameLogic.Player, action: GameInputs.Action) -> bool:
 	# TODO: some UX to hint mis-input
@@ -172,13 +176,34 @@ func _inputmatcher_enqueue(player: GameLogic.Player, action: GameInputs.Action) 
 
 	if (self._inputmatcher_ref.is_lead_full() and
 		self._inputmatcher_ref.is_follower_full()):
-		self._inputmatcher_ref.end_inputmatcher()
+		var end = func (_context):
+			self._inputmatcher_ref.end_inputmatcher()
+
+			var lead = self._inputmatcher_ref.lead_player
+			var follower = GameLogic.opposite_player(lead)
+			var inputs = self._inputmatcher_ref.dequeue_all()
+			var delay = 0
+			for player_inputs in inputs:
+				var f = func(_context):
+					var lead_input = player_inputs[lead]
+					var follower_input = player_inputs[follower]
+					self._process_inputmatcher_dequeued(
+						lead_input, follower_input
+					)
+
+				self._song_timer_ref.insert_delayed_event(delay, f)
+				delay += self._song_timer_ref.sec_per_measure
+			# TODO: enqueue something to transition to next state
+
+		self._song_timer_ref.insert_delayed_event(
+			self._song_timer_ref.sec_per_measure,
+			end,
+		)
 
 	return true
 
 func _perform_action(action: GameInputs.Action) -> bool:
 	if self._inputmatcher_ref.is_dequeueing_inputs:
-		# TODO:
 		return false
 
 	var player = GameInputs.ACTION_TO_PLAYER.get(action)
