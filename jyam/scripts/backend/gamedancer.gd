@@ -40,6 +40,8 @@ var key: String:
 var dancers_position: GameLogic.DancersPosition:
 	get:
 		match self._state:
+			GameDancer.State.ENTERING_CLOSED_POSITION_LEAD, \
+			GameDancer.State.ENTERING_CLOSED_POSITION_FOLLOW, \
 			GameDancer.State.CLOSED_BUFFER_INPUTS_LEAD, \
 			GameDancer.State.CLOSED_MATCH_INPUTS_FOLLOW, \
 			GameDancer.State.CLOSED_AUTO_LEAD, \
@@ -79,6 +81,10 @@ func _transition_move_state() -> GameDancer.State:
 	match self._state:
 		GameDancer.State.SOLO_IDLE, GameDancer.State.SOLO_MOVING:
 			return GameDancer.State.SOLO_MOVING
+		GameDancer.State.CLOSED_AUTO_LEAD:
+			return GameDancer.State.CLOSED_AUTO_LEAD
+		GameDancer.State.CLOSED_AUTO_FOLLOW:
+			return GameDancer.State.CLOSED_AUTO_FOLLOW
 		_:
 			assert(false, "can't move in state {0}".format([self._state]))
 			return GameDancer.State.SOLO_IDLE
@@ -88,6 +94,10 @@ func _transition_idle_state() -> GameDancer.State:
 	match self._state:
 		GameDancer.State.SOLO_IDLE, GameDancer.State.SOLO_MOVING:
 			return GameDancer.State.SOLO_IDLE
+		GameDancer.State.CLOSED_AUTO_LEAD:
+			return GameDancer.State.CLOSED_AUTO_LEAD
+		GameDancer.State.CLOSED_AUTO_FOLLOW:
+			return GameDancer.State.CLOSED_AUTO_FOLLOW
 		_:
 			assert(false, "could not choose idle state {0}".format([self._state]))
 			return GameDancer.State.SOLO_IDLE
@@ -153,25 +163,22 @@ func finish_move(song_timer: SongTimer):
 	var new_state = self._transition_idle_state()
 	self.trigger_stationary_transition(song_timer, new_state)
 
+func trigger_move_in_closed_position(
+	dst_plat: GamePlatforms.Platform,
+	plat_offset_dir: Vector3,
+	move_duration_sec: float,
+):
+	self.dancer3d.trigger_move_in_closed_position(
+		dst_plat, plat_offset_dir, move_duration_sec,
+	)
+
 func trigger_move_to_closed_position(
 	dst_plat: GamePlatforms.Platform,
 	move_dir: Vector2,
 	move_duration_sec: float,
 ):
-	# if moving down, the dancer should be on the "up" side of the platform,
-	# which is negative z
-	var offset_dir = Vector3(0, 0, 0)
-	match move_dir:
-		GameLogic.UP:
-			offset_dir = Vector3(0, 0, 1)
-		GameLogic.DOWN:
-			offset_dir = Vector3(0, 0, -1)
-		GameLogic.LEFT:
-			offset_dir = Vector3(1, 0, 0)
-		GameLogic.RIGHT:
-			offset_dir = Vector3(-1, 0, 0)
 	self.dancer3d.trigger_move_to_closed_position(
-		dst_plat, offset_dir, move_duration_sec
+		dst_plat, move_dir, move_duration_sec
 	)
 
 func finish_move_to_closed_position(song_timer: SongTimer):
@@ -237,6 +244,18 @@ func invite_accepted(song_timer: SongTimer, partner: GameDancer) -> bool:
 func invite_expired(song_timer: SongTimer):
 	assert(self._state == GameDancer.State.INVITING)
 	self.trigger_stationary_transition(song_timer, GameDancer.State.SOLO_IDLE)
+
+func finish_inputmatcher(song_timer: SongTimer):
+	var new_state: GameDancer.State = GameDancer.State.SOLO_IDLE
+	match self._state:
+		GameDancer.State.CLOSED_BUFFER_INPUTS_LEAD:
+			new_state = GameDancer.State.CLOSED_AUTO_LEAD
+		GameDancer.State.CLOSED_MATCH_INPUTS_FOLLOW:
+			new_state = GameDancer.State.CLOSED_AUTO_FOLLOW
+		_:
+			assert(false, "oops {0}".format([self._state]))
+			print_debug("bad state {0}".format([self._state]))
+	self.trigger_stationary_transition(song_timer, new_state)
 
 func on_beat(_song_timer: SongTimer):
 	pass

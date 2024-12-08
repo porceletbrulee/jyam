@@ -106,7 +106,7 @@ func _move_player(player: GameLogic.Player, move_dir: Vector2):
 		# TODO: allow some input buffering
 		return false
 
-	var dst_plat = self._platforms_ref.attempt_begin_move(dancer, move_dir)
+	var dst_plat = self._platforms_ref.get_dst_platform(dancer, move_dir)
 	if dst_plat == null:
 		return false
 
@@ -164,10 +164,83 @@ func _invite_player(player: GameLogic.Player) -> bool:
 
 	return true
 
+# godot doesn't let you return null, so no return annotation
+func _move_inputmatcher_dequeued(
+	lead_player: GameLogic.Player,
+	follower_player: GameLogic.Player,
+	move_dir: Vector2):
+	var lead = self._player_to_dancer[lead_player]
+	var follower = self._player_to_dancer[follower_player]
+
+	var dst_plat = self._platforms_ref.get_dst_platform(lead, move_dir)
+	if dst_plat == null:
+		return null
+
+	var finish_moves = []
+	for i in [
+		[lead, move_dir],
+		[follower, GameLogic.opposite_dir(move_dir)],
+	]:
+		var dancer = i[0]
+		var dancer_move_dir = i[1]
+
+		var move_duration_sec = self._song_timer_ref.sec_per_measure
+		# TODO: offset should be determined by follower action eventually?
+		var offset_dir = GamePlatforms.platform_offset_from_move_dir(dancer_move_dir)
+		dancer.trigger_move_in_closed_position(
+			dst_plat, offset_dir, move_duration_sec,
+		)
+
+		var finish_move = func(_context):
+			self._platforms_ref.finish_move(dancer, dst_plat)
+			dancer.finish_move(self._song_timer_ref)
+		finish_moves.append(finish_move)
+		# self._song_timer_ref.insert_delayed_event races with the dequeue event
+
+	return finish_moves
+
+# godot doesn't let you return null, so no return annotation
 func _process_inputmatcher_dequeued(
 	lead_action: GameInputs.Action,
 	follower_action: GameInputs.Action):
-	print_debug("dequeued {0} {1}".format([lead_action, follower_action]))
+	var lead_player = self._inputmatcher_ref.lead_player
+	var follower_player = GameLogic.opposite_player(lead_player)
+
+	var finishers = []
+	# lead_action determines where both move
+	var move_dir = GamePlatforms.ACTION_TO_MOVE_DIR.get(lead_action)
+	if move_dir != null:
+		var finish_moves = self._move_inputmatcher_dequeued(
+			lead_player, follower_player, move_dir,
+		)
+		if finish_moves == null:
+			# queued input might take them to a nonexistent platform
+			return null
+
+		finishers += finish_moves
+		# TODO: move spotlight
+
+	return finishers
+
+func _recurse_inputmatcher_dequeue(
+	lead: GameLogic.Player,
+	follower: GameLogic.Player,
+	inputs: Array,
+	index: int):
+	var curr_inputs = inputs[index]
+	var finishers = self._process_inputmatcher_dequeued(
+		curr_inputs[lead], curr_inputs[follower],
+	)
+	# TODO: enqueue something to transition to next state
+	if index + 1 < inputs.size():
+		var f = func(_context):
+			if finishers != null:
+				for finisher in finishers:
+					finisher.call(_context)
+			self._recurse_inputmatcher_dequeue(lead, follower, inputs, index + 1)
+		self._song_timer_ref.insert_delayed_event(
+			self._song_timer_ref.sec_per_measure, f,
+		)
 
 func _inputmatcher_enqueue(player: GameLogic.Player, action: GameInputs.Action) -> bool:
 	# TODO: some UX to hint mis-input
@@ -178,22 +251,16 @@ func _inputmatcher_enqueue(player: GameLogic.Player, action: GameInputs.Action) 
 		self._inputmatcher_ref.is_follower_full()):
 		var end = func (_context):
 			self._inputmatcher_ref.end_inputmatcher()
+			for d in self._player_to_dancer.values():
+				d.finish_inputmatcher(self._song_timer_ref)
 
 			var lead = self._inputmatcher_ref.lead_player
 			var follower = GameLogic.opposite_player(lead)
 			var inputs = self._inputmatcher_ref.dequeue_all()
-			var delay = 0
-			for player_inputs in inputs:
-				var f = func(_context):
-					var lead_input = player_inputs[lead]
-					var follower_input = player_inputs[follower]
-					self._process_inputmatcher_dequeued(
-						lead_input, follower_input
-					)
+			var initial_f = func(_context2):
+				self._recurse_inputmatcher_dequeue(lead, follower, inputs, 0)
+			self._song_timer_ref.insert_delayed_event(0, initial_f)
 
-				self._song_timer_ref.insert_delayed_event(delay, f)
-				delay += self._song_timer_ref.sec_per_measure
-			# TODO: enqueue something to transition to next state
 
 		self._song_timer_ref.insert_delayed_event(
 			self._song_timer_ref.sec_per_measure,
@@ -210,6 +277,9 @@ func _perform_action(action: GameInputs.Action) -> bool:
 
 	if self._inputmatcher_ref.is_accepting_inputs:
 		return self._inputmatcher_enqueue(player, action)
+
+	if self._player_to_dancer[player].dancers_position == GameLogic.DancersPosition.CLOSED:
+		return false
 
 	var move_dir = GamePlatforms.ACTION_TO_MOVE_DIR.get(action)
 	if move_dir != null:

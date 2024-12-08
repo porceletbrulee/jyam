@@ -18,6 +18,8 @@ const STATE_TO_ANIMATION_INFO = {
 	GameDancer.State.INVITING: ["invite", ScaleType.PER_MEASURE],
 	GameDancer.State.CLOSED_BUFFER_INPUTS_LEAD: ["closedpos_idle_lead", ScaleType.PER_MEASURE],
 	GameDancer.State.CLOSED_MATCH_INPUTS_FOLLOW: ["closedpos_idle_follow", ScaleType.PER_MEASURE],
+	GameDancer.State.CLOSED_AUTO_LEAD: ["closedpos_idle_lead", ScaleType.PER_MEASURE],
+	GameDancer.State.CLOSED_AUTO_FOLLOW: ["closedpos_idle_follow", ScaleType.PER_MEASURE],
 }
 
 var _song_metadata_ref: SongMetadata = null
@@ -157,11 +159,25 @@ func _trigger_move_with_offset(
 		var animation = info[0]
 		self._maybe_play_animation(animation, move_duration_sec)
 
-func trigger_move_to_closed_position(
+func trigger_move_in_closed_position(
 	dst_plat: GamePlatforms.Platform,
 	offset_dir: Vector3,
 	move_duration_sec: float,
 ):
+	var offset_from_center = offset_dir * self.CLOSED_POSITION_OFFSET_DISTANCE
+	self._trigger_move_with_offset(
+		dst_plat,
+		offset_from_center,
+		move_duration_sec,
+		GameDancer.State.SOLO_MOVING,
+	)
+
+func trigger_move_to_closed_position(
+	dst_plat: GamePlatforms.Platform,
+	move_dir: Vector2,
+	move_duration_sec: float,
+):
+	var offset_dir = GamePlatforms.platform_offset_from_move_dir(move_dir)
 	var offset_from_center = offset_dir * self.CLOSED_POSITION_OFFSET_DISTANCE
 	self._trigger_move_with_offset(
 		dst_plat,

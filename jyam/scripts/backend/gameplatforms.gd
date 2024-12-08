@@ -90,7 +90,7 @@ func set_dancer(dancer: GameDancer, dst: Vector2):
 	dancer.platform_pos = dst_plat.pos
 
 # @returns dst_platform: the destination platform, null if invalid move
-func attempt_begin_move(dancer: GameDancer, move_dir: Vector2) -> Platform:
+func get_dst_platform(dancer: GameDancer, move_dir: Vector2) -> Platform:
 	var src_plat = self.get_platform(dancer.platform_pos)
 	assert(src_plat != null and src_plat.dancers.has(dancer.key))
 
@@ -111,3 +111,18 @@ func finish_move(dancer: GameDancer, dst_plat: Platform):
 
 func _to_string() -> String:
 	return str(self._rows_array)
+
+static func platform_offset_from_move_dir(move_dir: Vector2) -> Vector3:
+	# if moving down, the dancer should be on the "up" side of the platform,
+	# which is negative z
+	var offset_dir = Vector3(0, 0, 0)
+	match move_dir:
+		GameLogic.UP:
+			offset_dir = Vector3(0, 0, 1)
+		GameLogic.DOWN:
+			offset_dir = Vector3(0, 0, -1)
+		GameLogic.LEFT:
+			offset_dir = Vector3(1, 0, 0)
+		GameLogic.RIGHT:
+			offset_dir = Vector3(-1, 0, 0)
+	return offset_dir

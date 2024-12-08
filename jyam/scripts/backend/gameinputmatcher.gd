@@ -58,16 +58,17 @@ func is_lead_full() -> bool:
 func is_follower_full() -> bool:
 	return self._is_player_queue_full(GameLogic.opposite_player(self.lead_player))
 
-func begin_inputmatcher(lead_player: GameLogic.Player) -> void:
+func begin_inputmatcher(plead_player: GameLogic.Player) -> void:
 	self.is_accepting_inputs = true
-	self.lead_player = lead_player
-	self._ui_ref.begin_inputmatcher(self._num_inputs, lead_player)
+	self.lead_player = plead_player
+	self._ui_ref.begin_inputmatcher(self._num_inputs, plead_player)
 
 func end_inputmatcher() -> void:
 	assert(self.lead_player != GameLogic.Player.PLAYER_NONE)
+	self.is_dequeueing_inputs = true
 	self.is_accepting_inputs = false
 	self._ui_ref.end_inputmatcher()
-	self.is_dequeueing_inputs = true
+
 
 func dequeue_all() -> Array[Dictionary]:
 	var p1 = self._player_inputs[GameLogic.Player.PLAYER_1]
